@@ -36,11 +36,10 @@ export const TAB_TYPES: TabTypeConfig[] = [
   }
 ];
 
-export const getTabTypeConfig = (type: TabType) => {
-    try {
-      return TAB_TYPES.find(t => t.type === type);
+export const getTabTypeConfig = (type: TabType): TabTypeConfig => {
+    const config = TAB_TYPES.find(t => t.type === type);
+    if (!config) {
+        throw new Error(`Unknown tab type: ${type}`);
     }
-    catch(e) {
-      throw new Error(`Unknown tab type: ${type}`);
-    }
+    return config;
 }; 
