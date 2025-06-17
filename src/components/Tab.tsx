@@ -9,6 +9,7 @@ interface DragItem {
     groupId: string;
     index: number;
     type: string;
+    title: string;
 }
 
 interface TabProps {
@@ -27,7 +28,43 @@ interface TabProps {
     totalTabCount: number;
     setViewRatio: (ratio: number) => void;
     isRemoving?: boolean;
+    isRightmost?: boolean;
+    isNew?: boolean;
 }
+
+const CustomDragLayer: React.FC = () => {
+    const { isDragging, item, clientOffset } = useDragLayer(monitor => ({
+        isDragging: monitor.isDragging(),
+        item: monitor.getItem(),
+        clientOffset: monitor.getClientOffset()
+    }));
+
+    if (!isDragging || !clientOffset) {
+        return null;
+    }
+
+    const { x, y } = clientOffset;
+
+    return (
+        <div
+            style={{
+                position: 'fixed',
+                pointerEvents: 'none',
+                left: x,
+                top: y,
+                transform: 'translate(-50%, -50%)',
+                opacity: 0.5,
+                zIndex: 1000
+            }}
+        >
+            <div className="tab">
+                <div className="tab-title">
+                    {item.title}
+                </div>
+            </div>
+        </div>
+    );
+};
 
 export const Tab: React.FC<TabProps> = ({
     id,
@@ -43,7 +80,9 @@ export const Tab: React.FC<TabProps> = ({
     onSelect,
     totalTabCount,
     setViewRatio,
-    isRemoving = false
+    isRemoving = false,
+    isRightmost = false,
+    isNew = false
 }) => {
     const ref = useRef<HTMLDivElement>(null);
     const [] = useState(false);
@@ -70,7 +109,7 @@ export const Tab: React.FC<TabProps> = ({
 
     const [{ isDragging: isDraggingState }, drag, preview] = useDrag<DragItem, void, { isDragging: boolean }>({
         type: 'tab',
-        item: { id, groupId, index, type: 'tab' },
+        item: { id, groupId, index, type: 'tab', title },
         collect: (monitor) => ({
             isDragging: monitor.isDragging()
         }),
@@ -80,12 +119,7 @@ export const Tab: React.FC<TabProps> = ({
                 setIsDropdownOpen(false);
             }
         }
-    }, [id, groupId, index]);
-
-    // Use the preview ref for the drag preview
-    useEffect(() => {
-        preview(getEmptyImage(), { captureDraggingState: true });
-    }, [preview]);
+    }, [id, groupId, index, title]);
 
     // Add a global drag monitor
     useEffect(() => {
@@ -224,7 +258,7 @@ export const Tab: React.FC<TabProps> = ({
         <>
             <div
                 ref={ref}
-                className={`tab ${isActive ? 'active' : ''} ${isDraggingState ? 'dragging' : ''} ${isRemoving ? 'removing' : ''}`}
+                className={`tab ${isActive ? 'active' : ''} ${isDraggingState ? 'dragging' : ''} ${isRemoving ? 'removing' : ''} ${isNew ? 'animate' : ''}`}
                 onContextMenu={handleContextMenu}
                 onClick={onSelect}
             >
@@ -250,6 +284,7 @@ export const Tab: React.FC<TabProps> = ({
                 position={dropdownPosition}
                 showChangeView={totalTabCount > 1}
             />
+            <CustomDragLayer />
         </>
     );
 };    

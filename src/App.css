@@ -75,6 +75,10 @@ body {
     min-width: 100px;
     max-width: 200px;
     transition: all 0.2s ease;
+}
+
+/* Only apply animations to new tabs and removing rightmost tabs */
+.tab.animate {
     animation: tabFadeIn 0.2s ease;
 }
 

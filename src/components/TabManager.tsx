@@ -87,6 +87,7 @@ export const TabManager: React.FC = () => {
     const [activeGroupId, setActiveGroupId] = useState<string>(tabGroups[0].id);
     const [viewRatio, setViewRatio] = useState(0.5); // 50-50 split by default
     const [removingTabId, setRemovingTabId] = useState<string | null>(null);
+    const [newTabId, setNewTabId] = useState<string | null>(null);
     const isDragging = useRef(false);
 
     useEffect(() => {
@@ -216,6 +217,10 @@ export const TabManager: React.FC = () => {
             type
         };
 
+        setNewTabId(newId);
+        // Clear the newTabId after animation completes
+        setTimeout(() => setNewTabId(null), 200);
+
         setTabGroups(prev => {
             const newGroups = [...prev];
             newGroups[groupIndex] = {
@@ -232,7 +237,17 @@ export const TabManager: React.FC = () => {
         // Set the removing tab ID to trigger the animation
         setRemovingTabId(tabId);
         
-        // Wait for the animation to complete before removing the tab
+        // Get the group and tab index
+        const group = tabGroups.find(g => g.id === groupId);
+        if (!group) return;
+        
+        const tabIndex = group.tabs.findIndex(tab => tab.id === tabId);
+        if (tabIndex === -1) return;
+        
+        // Only wait for animation if it's the rightmost tab
+        const isRightmost = tabIndex === group.tabs.length - 1;
+        const delay = isRightmost ? 200 : 0;
+        
         setTimeout(() => {
             setTabGroups(prev => {
                 const groupIndex = prev.findIndex(g => g.id === groupId);
@@ -275,7 +290,7 @@ export const TabManager: React.FC = () => {
                 return newGroups;
             });
             setRemovingTabId(null);
-        }, 200); // Match the animation duration
+        }, delay);
     };
 
     const moveTab = (sourceGroupId: string, dragIndex: number, targetGroupId: string, hoverIndex: number) => {
@@ -577,6 +592,7 @@ export const TabManager: React.FC = () => {
                                     setViewRatio={setViewRatio}
                                     showEmojis={showEmojis}
                                     removingTabId={removingTabId}
+                                    newTabId={newTabId}
                                 />
                             </div>
                             <div className="tab-content">
