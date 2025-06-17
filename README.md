@@ -20,7 +20,7 @@ A simple, flexible tab management system built with React and TypeScript. This i
 
 1. Clone the repository:
 ```bash
-# git clone TODO
+git clone https://github.com/t-rugg/Simple-Tab-Framework.git
 cd simple-tab-framework
 ```
 
