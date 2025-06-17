@@ -4,7 +4,9 @@ import './TabContent.css';
 export const AboutTab: React.FC = () => {
   return (
     <div className="tab-content-wrapper">
-      <h1>About</h1>
+      <div className="header-container">
+        <h1>About</h1>
+      </div>
       <div className="content-box">
         <h2>Information</h2>
         <ul>

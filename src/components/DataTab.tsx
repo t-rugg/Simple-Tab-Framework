@@ -35,21 +35,31 @@ export const DataTab: React.FC<DataTabProps> = ({
     }
   };
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEditValue(e.target.value);
+  };
+
+  const handleClick = () => {
+    setIsEditing(true);
+  };
+
   return (
     <div className="tab-content-wrapper data-tab">
-      {isEditing ? (
-        <input
-          type="text"
-          value={editValue}
-          onChange={(e) => setEditValue(e.target.value)}
-          onBlur={handleSubmit}
-          onKeyDown={handleKeyDown}
-          autoFocus
-          className="editable-header"
-        />
-      ) : (
-        <h1 onClick={() => setIsEditing(true)}>{title}</h1>
-      )}
+      <div className="header-container">
+        {isEditing ? (
+          <input
+            type="text"
+            className="editable-header"
+            value={editValue}
+            onChange={handleChange}
+            onBlur={handleSubmit}
+            onKeyDown={handleKeyDown}
+            autoFocus
+          />
+        ) : (
+          <h1 onClick={handleClick}>{title}</h1>
+        )}
+      </div>
       <div className="content-box">
         <p>
           This is a data tab. You can customize its content and functionality as needed.<br/>

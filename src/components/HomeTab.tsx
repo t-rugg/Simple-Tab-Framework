@@ -8,7 +8,9 @@ interface HomeTabProps {
 export const HomeTab: React.FC<HomeTabProps> = ({ title }) => {
   return (
     <div className="tab-content-wrapper">
-      <h1>{title}</h1>
+      <div className="header-container">
+        <h1>Home</h1>
+      </div>
       <div className="content-box">
         <h2>Getting Started</h2>
         <ul>
