@@ -261,6 +261,7 @@ export const Tab: React.FC<TabProps> = ({
                 className={`tab ${isActive ? 'active' : ''} ${isDraggingState ? 'dragging' : ''} ${isRemoving ? 'removing' : ''} ${isNew ? 'animate' : ''}`}
                 onContextMenu={handleContextMenu}
                 onClick={onSelect}
+                title={title}
             >
                 <span className={`tab-emoji ${!showEmoji ? 'hidden' : ''}`}>{emoji}</span>
                 <div className="tab-title">
