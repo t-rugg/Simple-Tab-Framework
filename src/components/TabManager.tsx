@@ -88,7 +88,12 @@ export const TabManager: React.FC = () => {
     const [viewRatio, setViewRatio] = useState(0.5); // 50-50 split by default
     const [removingTabId, setRemovingTabId] = useState<string | null>(null);
     const [newTabId, setNewTabId] = useState<string | null>(null);
+    const [maxTabWidth, setMaxTabWidth] = useState(16);
     const isDragging = useRef(false);
+
+    useEffect(() => {
+        document.documentElement.style.setProperty('--tabTitleMaxLength', `${maxTabWidth}ch`);
+    }, [maxTabWidth]);
 
     useEffect(() => {
         const handleGlobalContextMenu = (e: MouseEvent) => {
@@ -459,6 +464,8 @@ export const TabManager: React.FC = () => {
                 showEmojis={showEmojis}
                 onToggleEmojis={() => setShowEmojis(!showEmojis)}
                 onCloseAllTabs={closeAllTabs}
+                maxTabWidth={maxTabWidth}
+                onMaxTabWidthChange={setMaxTabWidth}
             />;
         }
         if (tab.type === 'data') {

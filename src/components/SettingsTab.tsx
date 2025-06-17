@@ -7,15 +7,26 @@ interface SettingsTabProps {
   showEmojis: boolean;
   onToggleEmojis: () => void;
   onCloseAllTabs: (e?: React.MouseEvent) => void;
+  maxTabWidth: number;
+  onMaxTabWidthChange: (width: number) => void;
 }
 
 export const SettingsTab: React.FC<SettingsTabProps> = ({ 
   showEmojis, 
   onToggleEmojis,
-  onCloseAllTabs 
+  onCloseAllTabs,
+  maxTabWidth,
+  onMaxTabWidthChange
 }) => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const { themeName } = useTheme();
+
+  const handleMaxWidthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value);
+    if (!isNaN(value)) {
+      onMaxTabWidthChange(value);
+    }
+  };
 
   return (
     <div className="settings-tab" data-theme={themeName}>
@@ -29,6 +40,19 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
           >
             {showEmojis ? 'Hide Emojis' : 'Show Emojis'}
           </button>
+        </div>
+        <div className="settings-group">
+          <div className="setting-item">
+            <label>Max tab width: {maxTabWidth}</label>
+            <input
+              type="range"
+              min="8"
+              max="32"
+              value={maxTabWidth}
+              onChange={handleMaxWidthChange}
+              className="range-input"
+            />
+          </div>
         </div>
         <div className="settings-group">
           <button

@@ -25,6 +25,69 @@
   margin-bottom: 20px;
 }
 
+.setting-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.setting-item label {
+  color: var(--textPrimary);
+  min-width: 150px;
+}
+
+.range-input {
+  flex: 1;
+  height: 4px;
+  -webkit-appearance: none;
+  background: var(--bgPrimary);
+  border-radius: 2px;
+  outline: none;
+}
+
+.range-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  background: var(--accentColor);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.range-input::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+.range-input::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: var(--accentColor);
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.range-input::-moz-range-thumb:hover {
+  transform: scale(1.1);
+}
+
+.number-input {
+  width: 80px;
+  padding: 4px 8px;
+  background-color: var(--bgPrimary);
+  border: 1px solid var(--borderColor);
+  border-radius: 4px;
+  color: var(--textPrimary);
+  font-size: 14px;
+}
+
+.number-input:focus {
+  outline: none;
+  border-color: var(--accentColor);
+}
+
 .settings-tab .toggle-button {
   padding: 8px 16px;
   background-color: var(--bgPrimary);

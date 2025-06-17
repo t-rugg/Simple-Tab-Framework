@@ -72,8 +72,8 @@ body {
     cursor: pointer;
     user-select: none;
     position: relative;
-    min-width: 100px;
-    max-width: 200px;
+    min-width: fit-content;
+    max-width: none;
     transition: all 0.2s ease;
 }
 
@@ -146,11 +146,13 @@ body {
 }
 
 .tab-title {
-    flex: 1;
+    flex: 0 1 auto;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     transition: all 0.2s ease;
+    margin-right: 0;
+    max-width: var(--tabTitleMaxLength);
 }
 
 .close-button {
@@ -163,7 +165,21 @@ body {
     align-items: center;
     justify-content: center;
     margin-left: 6px;
-    transition: color 0.2s ease;
+    transition: all 0.2s ease;
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    flex: 0 0 auto;
+}
+
+.tab.active .close-button {
+    opacity: 1;
+    width: auto;
+    margin-left: 2px;
+}
+
+.tab.active .tab-title {
+    margin-right: 16px;
 }
 
 .close-button:hover {
