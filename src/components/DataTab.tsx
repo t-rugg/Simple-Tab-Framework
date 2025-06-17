@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './TabContent.css';
 
 interface DataTabProps {
@@ -12,6 +12,10 @@ export const DataTab: React.FC<DataTabProps> = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(title);
+
+  useEffect(() => {
+    setEditValue(title);
+  }, [title]);
 
   const handleSubmit = () => {
     if (editValue.trim()) {
