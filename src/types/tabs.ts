@@ -1,10 +1,11 @@
-export type TabType = 'home' | 'data' | 'settings';
+export type TabType = 'home' | 'data' | 'settings' | 'about';
 
 export interface TabTypeConfig {
   type: TabType;
   displayName: string;
   emoji: string;
   isUnique: boolean;
+  addDividerAfter?: boolean;
 }
 
 export const TAB_TYPES: TabTypeConfig[] = [
@@ -18,37 +19,28 @@ export const TAB_TYPES: TabTypeConfig[] = [
     type: 'data',
     displayName: 'Data',
     emoji: '📊',
-    isUnique: true
+    isUnique: false,
+    addDividerAfter: true
   },
   {
     type: 'settings',
     displayName: 'Settings',
     emoji: '⚙️',
     isUnique: true
+  },
+  {
+    type: 'about',
+    displayName: 'About',
+    emoji: 'ℹ️',
+    isUnique: true
   }
 ];
 
 export const getTabTypeConfig = (type: TabType) => {
-    switch (type) {
-        case 'home':
-            return {
-                displayName: 'Home',
-                emoji: '🏠',
-                isUnique: true
-            };
-        case 'data':
-            return {
-                displayName: 'New Data',
-                emoji: '📊',
-                isUnique: false
-            };
-        case 'settings':
-            return {
-                displayName: 'Settings',
-                emoji: '⚙️',
-                isUnique: true
-            };
-        default:
-            throw new Error(`Unknown tab type: ${type}`);
+    try {
+      return TAB_TYPES.find(t => t.type === type);
+    }
+    catch(e) {
+      throw new Error(`Unknown tab type: ${type}`);
     }
 }; 

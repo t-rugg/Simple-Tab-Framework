@@ -1,0 +1,73 @@
+.tab-content-wrapper {
+    padding: 20px;
+}
+
+.tab-content-wrapper h1 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: var(--textPrimary);
+}
+
+.data-tab h1 {
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.data-tab h1:hover {
+    color: var(--accentColor);
+}
+
+.tab-content-wrapper .editable-header {
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: var(--textPrimary);
+    background: none;
+    border: none;
+    border-bottom: 2px solid var(--accentColor);
+    padding: 0;
+    width: 100%;
+    outline: none;
+}
+
+.tab-content-wrapper .content-box {
+    background-color: var(--bgSecondary);
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid var(--borderColor);
+}
+
+.tab-content-wrapper h2 {
+    font-size: 1.5em;
+    margin-bottom: 15px;
+    color: var(--textPrimary);
+}
+
+.tab-content-wrapper ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    color: var(--textSecondary);
+}
+
+.tab-content-wrapper li {
+    margin-bottom: 10px;
+}
+
+.tab-content-wrapper a {
+    color: inherit;
+}
+
+.tab-content-wrapper input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    font-size: 1.1em;
+    border: 1px solid var(--borderColor);
+    border-radius: 4px;
+    background-color: var(--bgPrimary);
+    color: var(--textPrimary);
+    margin-bottom: 20px;
+}
+
+.tab-content-wrapper p {
+    color: var(--textSecondary);
+} 

@@ -26,6 +26,7 @@ interface TabProps {
     onContextMenu?: (e: React.MouseEvent) => void;
     totalTabCount: number;
     setViewRatio: (ratio: number) => void;
+    isRemoving?: boolean;
 }
 
 export const Tab: React.FC<TabProps> = ({
@@ -41,7 +42,8 @@ export const Tab: React.FC<TabProps> = ({
     emoji = '',
     onSelect,
     totalTabCount,
-    setViewRatio
+    setViewRatio,
+    isRemoving = false
 }) => {
     const ref = useRef<HTMLDivElement>(null);
     const [] = useState(false);
@@ -222,11 +224,11 @@ export const Tab: React.FC<TabProps> = ({
         <>
             <div
                 ref={ref}
-                className={`tab ${isActive ? 'active' : ''} ${isDraggingState ? 'dragging' : ''}`}
+                className={`tab ${isActive ? 'active' : ''} ${isDraggingState ? 'dragging' : ''} ${isRemoving ? 'removing' : ''}`}
                 onContextMenu={handleContextMenu}
                 onClick={onSelect}
             >
-                {showEmoji && <span className="tab-emoji">{emoji}</span>}
+                <span className={`tab-emoji ${!showEmoji ? 'hidden' : ''}`}>{emoji}</span>
                 <div className="tab-title">
                     {title}
                 </div>

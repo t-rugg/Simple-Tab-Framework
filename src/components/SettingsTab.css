@@ -1,0 +1,92 @@
+.settings-tab {
+  padding: 20px;
+}
+
+.settings-tab h1 {
+  font-size: 2em;
+  margin-bottom: 20px;
+  color: var(--textPrimary);
+}
+
+.settings-container {
+  background-color: var(--bgSecondary);
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid var(--borderColor);
+}
+
+.settings-container h2 {
+  font-size: 1.5em;
+  margin-bottom: 15px;
+  color: var(--textPrimary);
+}
+
+.settings-group {
+  margin-bottom: 20px;
+}
+
+.settings-tab .toggle-button {
+  padding: 8px 16px;
+  background-color: var(--bgPrimary);
+  border: 1px solid var(--borderColor);
+  border-radius: 4px;
+  color: var(--textPrimary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.settings-tab .toggle-button:hover {
+  background-color: var(--bgSecondary);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.settings-tab .danger-button {
+  padding: 8px 16px;
+  background-color: var(--bgPrimary);
+  border: 1px solid var(--dangerColor);
+  border-radius: 4px;
+  color: var(--dangerColor);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.settings-tab .danger-button:hover {
+  background-color: var(--dangerColor);
+  color: var(--dangerText);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.confirm-dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.confirm-dialog {
+  background-color: var(--bgPrimary);
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid var(--borderColor);
+  max-width: 400px;
+  width: 100%;
+}
+
+.confirm-dialog p {
+  color: var(--textPrimary);
+  margin-bottom: 20px;
+}
+
+.confirm-dialog-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+} 

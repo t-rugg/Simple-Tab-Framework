@@ -60,6 +60,7 @@ body {
     border-bottom: 1px solid var(--borderColor);
     overflow-x: auto;
     white-space: nowrap;
+    transition: all 0.2s ease;
 }
 
 .tab {
@@ -73,7 +74,34 @@ body {
     position: relative;
     min-width: 100px;
     max-width: 200px;
-    transition: background-color 0.2s ease;
+    transition: all 0.2s ease;
+    animation: tabFadeIn 0.2s ease;
+}
+
+.tab.removing {
+    animation: tabFadeOut 0.2s ease forwards;
+}
+
+@keyframes tabFadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes tabFadeOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
 }
 
 .tab:hover {
@@ -82,7 +110,16 @@ body {
 
 .tab.active {
     background-color: var(--bgPrimary);
-    border-bottom: 2px solid var(--accentColor);
+}
+
+.tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: var(--accentColor);
 }
 
 .tab.dragging {
@@ -90,8 +127,18 @@ body {
 }
 
 .tab-emoji {
-    margin-right: 6px;
-    font-size: 0.9em;
+    margin-right: 8px;
+    font-size: 1.1em;
+    width: 1.2em;
+    text-align: center;
+    display: inline-block;
+    transition: all 0.2s ease;
+}
+
+.tab-emoji.hidden {
+    width: 0;
+    margin-right: 0;
+    opacity: 0;
 }
 
 .tab-title {
@@ -99,6 +146,7 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    transition: all 0.2s ease;
 }
 
 .close-button {
@@ -141,7 +189,6 @@ body {
 
 .tab-content {
     flex: 1;
-    padding: 20px;
     overflow-y: auto;
     background-color: var(--bgPrimary);
 }
@@ -214,20 +261,6 @@ body {
     to {
         opacity: 0;
     }
-}
-
-.tab-emoji {
-    margin-right: 8px;
-    font-size: 1.1em;
-    width: 1.2em;
-    text-align: center;
-    visibility: visible;
-}
-
-.tab-emoji.hidden {
-    visibility: hidden;
-    width: 0;
-    margin-right: 0;
 }
 
 .context-menu {
@@ -409,78 +442,6 @@ body {
     min-width: 300px;
     z-index: 1001;
     position: relative;
-}
-
-.confirm-dialog-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
-}
-
-.confirm-dialog {
-    background-color: var(--bgPrimary);
-    border: 1px solid var(--borderColor);
-    border-radius: 4px;
-    padding: 20px;
-    min-width: 300px;
-    z-index: 2001;
-    position: relative;
-}
-
-.confirm-dialog h4 {
-    margin: 0 0 12px 0;
-    color: var(--textColor);
-    font-size: 18px;
-}
-
-.confirm-dialog p {
-    margin: 0 0 20px 0;
-    color: var(--textColor);
-    font-size: 14px;
-    line-height: 1.5;
-}
-
-.confirm-dialog-buttons {
-    display: flex;
-    gap: 12px;
-    justify-content: flex-end;
-}
-
-.confirm-button {
-    padding: 6px 12px;
-    border-radius: 4px;
-    border: 1px solid var(--dangerColor);
-    background: var(--dangerColor);
-    color: var(--dangerText);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 14px;
-}
-
-.confirm-button:hover {
-    opacity: 0.9;
-}
-
-.cancel-button {
-    padding: 6px 12px;
-    border-radius: 4px;
-    border: 1px solid var(--borderColor);
-    background: var(--bgPrimary);
-    color: var(--textColor);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 14px;
-}
-
-.cancel-button:hover {
-    background: var(--hoverColor);
 }
 
 .tab.over-right-edge {

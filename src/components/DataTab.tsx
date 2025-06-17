@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import './TabContent.css';
 
 interface DataTabProps {
   title: string;
@@ -9,24 +10,47 @@ export const DataTab: React.FC<DataTabProps> = ({
   title,
   onTitleChange
 }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState(title);
+
+  const handleSubmit = () => {
+    if (editValue.trim()) {
+      onTitleChange(editValue);
+    } else {
+      setEditValue(title); // Reset to original if empty
+    }
+    setIsEditing(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSubmit();
+    } else if (e.key === 'Escape') {
+      setEditValue(title);
+      setIsEditing(false);
+    }
+  };
+
   return (
-    <div className="data-tab">
-      <div style={{ padding: '20px' }}>
+    <div className="tab-content-wrapper data-tab">
+      {isEditing ? (
         <input
           type="text"
-          value={title}
-          onChange={(e) => onTitleChange(e.target.value)}
-          style={{
-            width: '100%',
-            padding: '8px',
-            fontSize: '1.1em',
-            border: '1px solid var(--borderColor)',
-            borderRadius: '4px',
-            backgroundColor: 'var(--bgPrimary)',
-            color: 'var(--textPrimary)',
-            marginBottom: '20px'
-          }}
+          value={editValue}
+          onChange={(e) => setEditValue(e.target.value)}
+          onBlur={handleSubmit}
+          onKeyDown={handleKeyDown}
+          autoFocus
+          className="editable-header"
         />
+      ) : (
+        <h1 onClick={() => setIsEditing(true)}>{title}</h1>
+      )}
+      <div className="content-box">
+        <p>
+          This is a data tab. You can customize its content and functionality as needed.<br/>
+          Clicking the header text allows for changing the name of the tab.
+        </p>
       </div>
     </div>
   );

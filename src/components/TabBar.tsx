@@ -13,6 +13,7 @@ interface TabBarProps {
     onAddTab: (e: React.MouseEvent) => void;
     setViewRatio: (ratio: number) => void;
     showEmojis: boolean;
+    removingTabId: string | null;
 }
 
 export const TabBar: React.FC<TabBarProps> = ({
@@ -26,7 +27,8 @@ export const TabBar: React.FC<TabBarProps> = ({
     totalTabCount,
     onAddTab,
     setViewRatio,
-    showEmojis
+    showEmojis,
+    removingTabId
 }) => {
     const [, setContextMenu] = useState<{ x: number; y: number } | null>(null);
 
@@ -61,6 +63,7 @@ export const TabBar: React.FC<TabBarProps> = ({
                     groupId={groupId}
                     totalTabCount={totalTabCount}
                     setViewRatio={setViewRatio}
+                    isRemoving={tab.id === removingTabId}
                 />
             ))}
             <button 

@@ -5,6 +5,7 @@ import { TabTypeDropdown } from './TabTypeDropdown';
 import { SettingsTab } from './SettingsTab';
 import { DataTab } from './DataTab';
 import { HomeTab } from './HomeTab';
+import { AboutTab } from './AboutTab';
 import { TabType, getTabTypeConfig } from '../types/tabs';
 import { TabBar } from './TabBar';
 
@@ -85,6 +86,7 @@ export const TabManager: React.FC = () => {
     const [dropdownPosition, setDropdownPosition] = useState({ x: 0, y: 0 });
     const [activeGroupId, setActiveGroupId] = useState<string>(tabGroups[0].id);
     const [viewRatio, setViewRatio] = useState(0.5); // 50-50 split by default
+    const [removingTabId, setRemovingTabId] = useState<string | null>(null);
     const isDragging = useRef(false);
 
     useEffect(() => {
@@ -227,36 +229,53 @@ export const TabManager: React.FC = () => {
     };
 
     const closeTab = (groupId: string, tabId: string) => {
-        setTabGroups(prev => {
-            const groupIndex = prev.findIndex(g => g.id === groupId);
-            if (groupIndex === -1) return prev;
+        // Set the removing tab ID to trigger the animation
+        setRemovingTabId(tabId);
+        
+        // Wait for the animation to complete before removing the tab
+        setTimeout(() => {
+            setTabGroups(prev => {
+                const groupIndex = prev.findIndex(g => g.id === groupId);
+                if (groupIndex === -1) return prev;
 
-            const group = prev[groupIndex];
-            const newTabs = group.tabs.filter(tab => tab.id !== tabId);
-            
-            if (newTabs.length === 0) {
-                // If this was the last tab in the group and there's another group, remove this group
-                if (prev.length > 1) {
-                    // Reset view ratio to 1 when a view is closed
-                    setViewRatio(1);
-                    return prev.filter(g => g.id !== groupId);
+                const group = prev[groupIndex];
+                const newTabs = group.tabs.filter(tab => tab.id !== tabId);
+                
+                if (newTabs.length === 0) {
+                    // If this was the last tab in the group and there's another group, remove this group
+                    if (prev.length > 1) {
+                        // Reset view ratio to 1 when a view is closed
+                        setViewRatio(1);
+                        return prev.filter(g => g.id !== groupId);
+                    }
+                    // If this was the last tab in the last group, just return an empty group
+                    return [{
+                        id: groupId,
+                        tabs: [],
+                        activeTabId: ''
+                    }];
                 }
-                // If this was the last tab in the last group, just return an empty group
-                return [{
-                    id: groupId,
-                    tabs: [],
-                    activeTabId: ''
-                }];
-            }
 
-            const newGroups = [...prev];
-            newGroups[groupIndex] = {
-                ...group,
-                tabs: newTabs,
-                activeTabId: group.activeTabId === tabId ? newTabs[newTabs.length - 1].id : group.activeTabId
-            };
-            return newGroups;
-        });
+                // If the closed tab was active, activate the next tab
+                let newActiveTabId = group.activeTabId;
+                if (newActiveTabId === tabId) {
+                    const closedTabIndex = group.tabs.findIndex(tab => tab.id === tabId);
+                    const nextTabIndex = closedTabIndex === group.tabs.length - 1 
+                        ? closedTabIndex - 1 
+                        : closedTabIndex + 1;
+                    newActiveTabId = group.tabs[nextTabIndex].id;
+                }
+
+                const newGroups = [...prev];
+                newGroups[groupIndex] = {
+                    ...group,
+                    tabs: newTabs,
+                    activeTabId: newActiveTabId
+                };
+                return newGroups;
+            });
+            setRemovingTabId(null);
+        }, 200); // Match the animation duration
     };
 
     const moveTab = (sourceGroupId: string, dragIndex: number, targetGroupId: string, hoverIndex: number) => {
@@ -421,39 +440,38 @@ export const TabManager: React.FC = () => {
 
     const renderTabContent = (tab: TabData) => {
         if (tab.type === 'settings') {
-            return (
-                <SettingsTab
-                    showEmojis={showEmojis}
-                    onToggleEmojis={() => setShowEmojis(!showEmojis)}
-                    onCloseAllTabs={closeAllTabs}
-                />
-            );
+            return <SettingsTab
+                showEmojis={showEmojis}
+                onToggleEmojis={() => setShowEmojis(!showEmojis)}
+                onCloseAllTabs={closeAllTabs}
+            />;
         }
         if (tab.type === 'data') {
-            return (
-                <DataTab
-                    title={tab.title}
-                    onTitleChange={(newTitle) => {
-                        setTabGroups(prev => {
-                            const newGroups = [...prev];
-                            const groupIndex = newGroups.findIndex(g => g.tabs.some(t => t.id === tab.id));
-                            if (groupIndex === -1) return prev;
-                            
-                            const tabIndex = newGroups[groupIndex].tabs.findIndex(t => t.id === tab.id);
-                            if (tabIndex === -1) return prev;
-                            
-                            newGroups[groupIndex].tabs[tabIndex] = {
-                                ...newGroups[groupIndex].tabs[tabIndex],
-                                title: newTitle
-                            };
-                            return newGroups;
-                        });
-                    }}
-                />
-            );
+            return <DataTab 
+                title={tab.title} 
+                onTitleChange={(newTitle: string) => {
+                    setTabGroups(prev => {
+                        const newGroups = [...prev];
+                        const groupIndex = newGroups.findIndex(g => g.tabs.some(t => t.id === tab.id));
+                        if (groupIndex === -1) return prev;
+                        
+                        const tabIndex = newGroups[groupIndex].tabs.findIndex(t => t.id === tab.id);
+                        if (tabIndex === -1) return prev;
+                        
+                        newGroups[groupIndex].tabs[tabIndex] = {
+                            ...newGroups[groupIndex].tabs[tabIndex],
+                            title: newTitle
+                        };
+                        return newGroups;
+                    });
+                }} 
+            />;
         }
         if (tab.type === 'home') {
             return <HomeTab title={tab.title} />;
+        }
+        if (tab.type === 'about') {
+            return <AboutTab />;
         }
         return <div>{tab.title}</div>;
     };
@@ -534,26 +552,31 @@ export const TabManager: React.FC = () => {
                                 }}
                             >
                                 <TabBar
+                                    key={group.id}
                                     tabs={group.tabs}
                                     activeTabId={group.activeTabId}
-                                    onTabSelect={(id) => {
+                                    onTabSelect={(tabId) => {
                                         setTabGroups(prev => {
                                             const newGroups = [...prev];
-                                            newGroups[groupIndex] = {
-                                                ...group,
-                                                activeTabId: id
-                                            };
+                                            const groupIndex = newGroups.findIndex(g => g.id === group.id);
+                                            if (groupIndex !== -1) {
+                                                newGroups[groupIndex] = {
+                                                    ...newGroups[groupIndex],
+                                                    activeTabId: tabId
+                                                };
+                                            }
                                             return newGroups;
                                         });
                                     }}
-                                    onTabClose={(id) => closeTab(group.id, id)}
+                                    onTabClose={(tabId) => closeTab(group.id, tabId)}
                                     onTabMove={moveTab}
-                                    onTabSplit={(id) => splitView(group.id, id)}
+                                    onTabSplit={(tabId) => splitView(group.id, tabId)}
                                     groupId={group.id}
                                     totalTabCount={tabGroups.reduce((sum, g) => sum + g.tabs.length, 0)}
                                     onAddTab={(e) => handleAddTabClick(e, group.id)}
                                     setViewRatio={setViewRatio}
                                     showEmojis={showEmojis}
+                                    removingTabId={removingTabId}
                                 />
                             </div>
                             <div className="tab-content">
@@ -571,7 +594,8 @@ export const TabManager: React.FC = () => {
                                         bottom: 0,
                                         width: '4px',
                                         cursor: 'col-resize',
-                                        backgroundColor: 'var(--borderColor)',
+                                        backgroundColor: 'var(--bgSecondary)',
+                                        borderLeft: '1px solid var(--borderColor)',
                                         zIndex: 1
                                     }}
                                 />
