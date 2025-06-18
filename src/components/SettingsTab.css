@@ -39,7 +39,7 @@
 .range-input {
   flex: 1;
   height: 4px;
-  -webkit-appearance: none;
+  appearance: none;
   background: var(--bgPrimary);
   border-radius: 2px;
   outline: none;
@@ -152,4 +152,30 @@
   display: flex;
   gap: 10px;
   justify-content: flex-end;
+}
+
+.language-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.language-button {
+  padding: 6px 12px;
+  border: 1px solid var(--borderColor);
+  background: var(--bgSecondary);
+  color: var(--textPrimary);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.language-button:hover {
+  background: var(--bgHover);
+}
+
+.language-button.active {
+  background: var(--accentColor);
+  border-color: var(--accentColor);
+  color: var(--textOnAccent);
 } 

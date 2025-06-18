@@ -1,0 +1,54 @@
+{
+  "settings": {
+    "title": "Paramètres",
+    "tabSettings": "Paramètres des Onglets",
+    "showEmojis": "Afficher les Emojis",
+    "hideEmojis": "Masquer les Emojis",
+    "maxTabWidth": "Largeur maximale des onglets : {{width}}",
+    "closeAllTabs": "Fermer tous les Onglets",
+    "confirmCloseAll": {
+      "message": "Êtes-vous sûr de vouloir fermer tous les onglets ? Cette action est irréversible !",
+      "yes": "Oui",
+      "no": "Non"
+    },
+    "language": "Langue"
+  },
+  "tabs": {
+    "home": "Accueil",
+    "settings": "Paramètres",
+    "about": "À Propos",
+    "data": "Données",
+    "numbered": "{{name}} {{number}}"
+  },
+  "home": {
+    "title": "Accueil",
+    "gettingStarted": "Pour commencer",
+    "instructions": {
+      "addTabs": "Clic droit sur la barre d'onglets pour ajouter de nouveaux onglets",
+      "reorderTabs": "Faites glisser les onglets pour les réorganiser",
+      "splitView": "Faites glisser les onglets vers le bord droit de l'écran pour créer une vue divisée",
+      "customize": "Utilisez l'onglet Paramètres pour personnaliser votre expérience"
+    }
+  },
+  "about": {
+    "title": "À Propos",
+    "information": "Informations",
+    "githubRepo": "Dépôt GitHub",
+    "createdBy": "Créé par Timothy Rugg"
+  },
+  "data": {
+    "description": "Ceci est un onglet de données. Vous pouvez personnaliser son contenu et ses fonctionnalités selon vos besoins.",
+    "editHint": "Cliquer sur le texte de l'en-tête permet de modifier le nom de l'onglet."
+  },
+  "theme": {
+    "light": "Clair",
+    "dark": "Sombre",
+    "modeEnabled": "Mode {{mode}} activé",
+    "switchTo": "Passer au mode {{mode}}"
+  },
+  "common": {
+    "close": "Fermer",
+    "save": "Enregistrer",
+    "cancel": "Annuler"
+  }
+} 

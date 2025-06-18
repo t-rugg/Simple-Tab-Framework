@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { TAB_TYPES, TabType } from '../types/tabs';
 
 interface TabTypeDropdownProps {
@@ -8,6 +9,8 @@ interface TabTypeDropdownProps {
 }
 
 export const TabTypeDropdown: React.FC<TabTypeDropdownProps> = ({ onSelect, onClose, position }) => {
+    const { t } = useTranslation();
+
     return (
         <>
             <div className="dropdown-overlay" onClick={onClose} />
@@ -29,7 +32,7 @@ export const TabTypeDropdown: React.FC<TabTypeDropdownProps> = ({ onSelect, onCl
                             }}
                         >
                             <span className="tab-type-emoji">{type.emoji}</span>
-                            <span className="tab-type-name">{type.displayName}</span>
+                            <span className="tab-type-name">{t(`tabs.${type.type}`)}</span>
                         </button>
                         {type.addDividerAfter && index < TAB_TYPES.length - 1 && (
                             <div 

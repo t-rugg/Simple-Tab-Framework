@@ -1,21 +1,24 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import './TabContent.css';
 
 export const AboutTab: React.FC = () => {
+  const { t } = useTranslation();
+
   return (
     <div className="tab-content-wrapper">
       <div className="header-container">
-        <h1>About</h1>
+        <h1>{t('about.title')}</h1>
       </div>
       <div className="content-box">
-        <h2>Information</h2>
+        <h2>{t('about.information')}</h2>
         <ul>
           <li>
             <a href="https://github.com/t-rugg/Simple-Tab-Framework">
-              GitHub Repository
+              {t('about.githubRepo')}
             </a>
           </li>
-          <li>Created by Timothy Rugg</li>
+          <li>{t('about.createdBy')}</li>
         </ul>
       </div>
     </div>

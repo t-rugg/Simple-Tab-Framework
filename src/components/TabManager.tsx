@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TabTypeDropdown } from './TabTypeDropdown';
@@ -90,6 +91,7 @@ export const TabManager: React.FC = () => {
     const [newTabId, setNewTabId] = useState<string | null>(null);
     const [maxTabWidth, setMaxTabWidth] = useState(16);
     const isDragging = useRef(false);
+    const { t, i18n } = useTranslation();
 
     useEffect(() => {
         document.documentElement.style.setProperty('--tabTitleMaxLength', `${maxTabWidth}ch`);
@@ -125,6 +127,27 @@ export const TabManager: React.FC = () => {
             console.error('Failed to save state:', error);
         }
     }, [tabGroups, nextTabId]);
+
+    // Update tab titles when language changes
+    useEffect(() => {
+        setTabGroups(prevGroups => {
+            return prevGroups.map(group => ({
+                ...group,
+                tabs: group.tabs.map(tab => {
+                    const typeConfig = getTabTypeConfig(tab.type);
+                    if (typeConfig.isUnique) {
+                        // Only update titles for unique tabs (Home, Settings, About)
+                        return {
+                            ...tab,
+                            title: t(`tabs.${tab.type}`)
+                        };
+                    }
+                    // Keep Data tabs unchanged
+                    return tab;
+                })
+            }));
+        });
+    }, [i18n.language, t]);
 
     const handleAddTabClick = (e: React.MouseEvent, groupId: string) => {
         const position = e.type === 'contextmenu' 
@@ -200,7 +223,7 @@ export const TabManager: React.FC = () => {
         const newId = (highestTabId + 1).toString();
 
         // For non-unique tabs, find the smallest available number
-        let displayName = typeConfig.displayName;
+        let displayName = t(`tabs.${type}`);
         if (!typeConfig.isUnique) {
             // Get all existing tab titles of this type
             const existingTitles = tabGroups.flatMap(g => g.tabs)
@@ -209,10 +232,10 @@ export const TabManager: React.FC = () => {
 
             // Find the smallest number that's not used
             let number = 1;
-            while (existingTitles.includes(`${typeConfig.displayName} ${number}`)) {
+            while (existingTitles.includes(t('tabs.numbered', { name: displayName, number }))) {
                 number++;
             }
-            displayName = `${typeConfig.displayName} ${number}`;
+            displayName = t('tabs.numbered', { name: displayName, number });
         }
 
         const newTab: TabData = {

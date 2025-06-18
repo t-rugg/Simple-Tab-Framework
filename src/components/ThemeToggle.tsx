@@ -1,15 +1,18 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
 
 export const ThemeToggle: React.FC = () => {
     const { themeName, toggleTheme } = useTheme();
     const { showToast } = useToast();
+    const { t } = useTranslation();
 
     const handleThemeToggle = () => {
         toggleTheme();
+        const newMode = themeName === 'light' ? t('theme.dark') : t('theme.light');
         showToast(
-            `${themeName === 'light' ? 'Dark' : 'Light'} mode enabled`,
+            t('theme.modeEnabled', { mode: newMode }),
             themeName === 'light' ? '🌙' : '☀️'
         );
     };
@@ -18,7 +21,9 @@ export const ThemeToggle: React.FC = () => {
         <button
             className="theme-toggle"
             onClick={handleThemeToggle}
-            aria-label={`Switch to ${themeName === 'light' ? 'dark' : 'light'} mode`}
+            aria-label={t('theme.switchTo', { 
+                mode: themeName === 'light' ? t('theme.dark') : t('theme.light')
+            })}
         >
             {themeName === 'light' ? '☀️' : '🌙'}
         </button>

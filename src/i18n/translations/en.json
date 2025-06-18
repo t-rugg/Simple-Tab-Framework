@@ -1,0 +1,54 @@
+{
+  "settings": {
+    "title": "Settings",
+    "tabSettings": "Tab Settings",
+    "showEmojis": "Show Emojis",
+    "hideEmojis": "Hide Emojis",
+    "maxTabWidth": "Max tab width: {{width}}",
+    "closeAllTabs": "Close All Tabs",
+    "confirmCloseAll": {
+      "message": "Are you sure you want to close all tabs? This can't be undone!",
+      "yes": "Yes",
+      "no": "No"
+    },
+    "language": "Language"
+  },
+  "tabs": {
+    "home": "Home",
+    "settings": "Settings",
+    "about": "About",
+    "data": "Data",
+    "numbered": "{{name}} {{number}}"
+  },
+  "home": {
+    "title": "Home",
+    "gettingStarted": "Getting Started",
+    "instructions": {
+      "addTabs": "Right-click on the tab bar to add new tabs",
+      "reorderTabs": "Drag tabs to reorder them",
+      "splitView": "Drag tabs to the right edge of the screen to create a split view",
+      "customize": "Use the Settings tab to customize your experience"
+    }
+  },
+  "about": {
+    "title": "About",
+    "information": "Information",
+    "githubRepo": "GitHub Repository",
+    "createdBy": "Created by Timothy Rugg"
+  },
+  "data": {
+    "description": "This is a data tab. You can customize its content and functionality as needed.",
+    "editHint": "Clicking the header text allows for changing the name of the tab."
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "modeEnabled": "{{mode}} mode enabled",
+    "switchTo": "Switch to {{mode}} mode"
+  },
+  "common": {
+    "close": "Close",
+    "save": "Save",
+    "cancel": "Cancel"
+  }
+} 

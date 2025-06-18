@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import './TabContent.css';
 
 interface DataTabProps {
@@ -12,6 +13,7 @@ export const DataTab: React.FC<DataTabProps> = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(title);
+  const { t } = useTranslation();
 
   useEffect(() => {
     setEditValue(title);
@@ -62,8 +64,8 @@ export const DataTab: React.FC<DataTabProps> = ({
       </div>
       <div className="content-box">
         <p>
-          This is a data tab. You can customize its content and functionality as needed.<br/>
-          Clicking the header text allows for changing the name of the tab.
+          {t('data.description')}<br/>
+          {t('data.editHint')}
         </p>
       </div>
     </div>

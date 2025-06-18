@@ -1,6 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
-import { getEmptyImage } from 'react-dnd-html5-backend';
 import { useDragLayer } from 'react-dnd';
 import { TabDropdown } from './TabDropdown';
 
@@ -81,7 +80,6 @@ export const Tab: React.FC<TabProps> = ({
     totalTabCount,
     setViewRatio,
     isRemoving = false,
-    isRightmost = false,
     isNew = false
 }) => {
     const ref = useRef<HTMLDivElement>(null);
@@ -107,7 +105,7 @@ export const Tab: React.FC<TabProps> = ({
         };
     }, [isDropdownOpen]);
 
-    const [{ isDragging: isDraggingState }, drag, preview] = useDrag<DragItem, void, { isDragging: boolean }>({
+    const [{ isDragging: isDraggingState }, drag] = useDrag<DragItem, void, { isDragging: boolean }>({
         type: 'tab',
         item: { id, groupId, index, type: 'tab', title },
         collect: (monitor) => ({

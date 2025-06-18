@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import './SettingsTab.css';
 import '../themes.css';
 import { useTheme } from '../context/ThemeContext';
@@ -20,6 +21,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
 }) => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const { themeName } = useTheme();
+  const { t, i18n } = useTranslation();
 
   const handleMaxWidthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value);
@@ -28,22 +30,26 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
     }
   };
 
+  const changeLanguage = (lng: string) => {
+    i18n.changeLanguage(lng);
+  };
+
   return (
     <div className="settings-tab" data-theme={themeName}>
-      <h1>Settings</h1>
+      <h1>{t('settings.title')}</h1>
       <div className="settings-container">
-        <h2>Tab Settings</h2>
+        <h2>{t('settings.tabSettings')}</h2>
         <div className="settings-group">
           <button
             className="toggle-button"
             onClick={onToggleEmojis}
           >
-            {showEmojis ? 'Hide Emojis' : 'Show Emojis'}
+            {showEmojis ? t('settings.hideEmojis') : t('settings.showEmojis')}
           </button>
         </div>
         <div className="settings-group">
           <div className="setting-item">
-            <label>Max tab width: {maxTabWidth}</label>
+            <label>{t('settings.maxTabWidth', { width: maxTabWidth })}</label>
             <input
               type="range"
               min="8"
@@ -55,19 +61,34 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
           </div>
         </div>
         <div className="settings-group">
+          <h3>{t('settings.language')}</h3>
+          <div className="language-buttons">
+            <button
+              className={`language-button ${i18n.language === 'en' ? 'active' : ''}`}
+              onClick={() => changeLanguage('en')}
+            >
+              EN
+            </button>
+            <button
+              className={`language-button ${i18n.language === 'fr' ? 'active' : ''}`}
+              onClick={() => changeLanguage('fr')}
+            >
+              FR
+            </button>
+          </div>
+        </div>
+        <div className="settings-group">
           <button
             className="danger-button"
             onClick={() => setShowConfirmation(true)}
           >
-            Close All Tabs
+            {t('settings.closeAllTabs')}
           </button>
         </div>
         {showConfirmation && (
           <div className="confirm-dialog-overlay">
             <div className="confirm-dialog">
-              <p>
-                Are you sure you want to close all tabs? This can't be undone!
-              </p>
+              <p>{t('settings.confirmCloseAll.message')}</p>
               <div className="confirm-dialog-buttons">
                 <button 
                   className="danger-button"
@@ -76,13 +97,13 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
                     setShowConfirmation(false);
                   }}
                 >
-                  Yes
+                  {t('settings.confirmCloseAll.yes')}
                 </button>
                 <button
                   className="toggle-button"
                   onClick={() => setShowConfirmation(false)}
                 >
-                  No
+                  {t('settings.confirmCloseAll.no')}
                 </button>
               </div>
             </div>
