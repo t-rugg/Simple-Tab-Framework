@@ -188,22 +188,42 @@ export const TabManager: React.FC = () => {
                     // If it's in another group, move it to the current group
                     setTabGroups(prev => {
                         const newGroups = [...prev];
-                        // Remove the tab from its current group
                         const sourceGroupIndex = prev.findIndex(g => g.tabs.some(t => t.id === existingTab.id));
-                        if (sourceGroupIndex !== -1) {
-                            const sourceGroup = { ...prev[sourceGroupIndex] };
-                            sourceGroup.tabs = sourceGroup.tabs.filter(t => t.id !== existingTab.id);
-                            if (sourceGroup.tabs.length > 0) {
-                                sourceGroup.activeTabId = sourceGroup.tabs[0].id;
-                            }
-                            newGroups[sourceGroupIndex] = sourceGroup;
+                        if (sourceGroupIndex === -1) return prev;
+
+                        // Create new arrays to avoid mutating state directly
+                        const sourceGroup = { ...newGroups[sourceGroupIndex] };
+                        const targetGroup = { ...newGroups[groupIndex] };
+
+                        // Remove tab from source group
+                        const [movedTab] = sourceGroup.tabs.splice(sourceGroup.tabs.findIndex(t => t.id === existingTab.id), 1);
+                        sourceGroup.tabs = [...sourceGroup.tabs];
+
+                        // Insert tab into target group
+                        targetGroup.tabs.push(movedTab);
+                        targetGroup.tabs = [...targetGroup.tabs];
+                        targetGroup.activeTabId = movedTab.id;
+
+                        // Update active tab in source group to be the first tab
+                        if (sourceGroup.tabs.length > 0) {
+                            sourceGroup.activeTabId = sourceGroup.tabs[0].id;
                         }
-                        // Add the tab to the current group
-                        newGroups[groupIndex] = {
-                            ...group,
-                            tabs: [...group.tabs, existingTab],
-                            activeTabId: existingTab.id
-                        };
+
+                        // Update the groups
+                        newGroups[sourceGroupIndex] = sourceGroup;
+                        newGroups[groupIndex] = targetGroup;
+
+                        // If source group is now empty, remove it and ensure remaining group has ID "1"
+                        if (sourceGroup.tabs.length === 0) {
+                            const remainingGroup = newGroups.find(g => g.id !== sourceGroup.id);
+                            if (remainingGroup) {
+                                return [{
+                                    ...remainingGroup,
+                                    id: '1'
+                                }];
+                            }
+                        }
+
                         return newGroups;
                     });
                 }
@@ -633,17 +653,6 @@ export const TabManager: React.FC = () => {
                                 <div
                                     className="view-divider"
                                     onMouseDown={handleDividerMouseDown}
-                                    style={{
-                                        position: 'absolute',
-                                        right: 0,
-                                        top: 0,
-                                        bottom: 0,
-                                        width: '4px',
-                                        cursor: 'col-resize',
-                                        backgroundColor: 'var(--bgSecondary)',
-                                        borderLeft: '1px solid var(--borderColor)',
-                                        zIndex: 1
-                                    }}
                                 />
                             )}
                         </div>

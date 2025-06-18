@@ -1,0 +1,11 @@
+.view-divider {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    cursor: col-resize;
+    background-color: var(--bgSecondary);
+    border-left: 1px solid var(--borderColor);
+    z-index: 1;
+} 
