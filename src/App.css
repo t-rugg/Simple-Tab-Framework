@@ -263,6 +263,7 @@ body {
     cursor: pointer;
     transition: all 0.2s ease;
     font-size: 14px;
+    text-align: center;
 }
 
 .toggle-button:hover,
@@ -285,11 +286,7 @@ body {
     cursor: pointer;
     transition: all 0.2s ease;
     font-size: 14px;
-    display: inline-block;
     text-align: center;
-    text-decoration: none;
-    margin: 0;
-    line-height: 1.5;
 }
 
 .danger-button:hover {

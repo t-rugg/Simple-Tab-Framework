@@ -7,10 +7,26 @@
     "maxTabWidth": "Largeur maximale des onglets : {{width}}",
     "ribbonWidth": "Largeur de la bande : {{width}}",
     "closeAllTabs": "Fermer tous les onglets",
+    "manageData": "Gérer les données",
+    "exportData": "Exporter les données",
+    "importData": "Importer les données",
+    "clearData": "Effacer toutes les données",
+    "importError": "Échec de l'importation des données. Veuillez vérifier que le fichier est valide.",
+    "clearError": "Échec de l'effacement des données. Veuillez réessayer.",
     "confirmCloseAll": {
       "message": "Êtes-vous sûr de vouloir fermer tous les onglets ? Cette action est irréversible !",
       "yes": "Oui",
       "no": "Non"
+    },
+    "confirmImport": {
+      "message": "Cela remplacera toutes les données actuelles. Voulez-vous vraiment continuer ?",
+      "yes": "Oui, Importer",
+      "no": "Annuler"
+    },
+    "confirmClear": {
+      "message": "Êtes-vous sûr de vouloir effacer toutes les données ? Cela supprimera tous les onglets et paramètres. Cette action est irréversible !",
+      "yes": "Oui, Tout Effacer",
+      "no": "Annuler"
     },
     "language": "Langue"
   },
@@ -44,8 +60,7 @@
   "theme": {
     "light": "Clair",
     "dark": "Sombre",
-    "modeEnabled": "Mode {{mode}} activé",
-    "switchTo": "Passer au mode {{mode}}"
+    "system": "Système"
   },
   "common": {
     "close": "Fermer",
