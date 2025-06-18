@@ -55,7 +55,9 @@
   },
   "data": {
     "description": "This is a data tab. You can customize its content and functionality as needed.",
-    "editHint": "Clicking the header text allows for changing the name of the tab."
+    "editHint": "Clicking the header text allows for changing the name of the tab.",
+    "showRibbon": "Show Ribbon",
+    "hideRibbon": "Hide Ribbon"
   },
   "theme": {
     "light": "Light",

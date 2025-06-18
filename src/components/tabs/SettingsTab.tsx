@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import './SettingsTab.css';
-import '../themes.css';
-import { useTheme } from '../context/ThemeContext';
-import { TabFactory, TabComponentProps, Tab } from '../types/tabs';
+import '../../themes.css';
+import { useTheme } from '../../context/ThemeContext';
+import { TabFactory, TabComponentProps, Tab } from '../../types/tabs';
 
 interface SettingsTabProps extends TabComponentProps {
   showEmojis: boolean;

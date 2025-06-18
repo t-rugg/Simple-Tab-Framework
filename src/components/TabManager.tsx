@@ -3,10 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TabTypeDropdown } from './TabTypeDropdown';
-import { SettingsTab } from './SettingsTab';
-import { DataTab } from './DataTab';
-import { HomeTab } from './HomeTab';
-import { AboutTab } from './AboutTab';
+import { SettingsTab } from './tabs/SettingsTab';
+import { DataTab } from './tabs/DataTab';
+import { HomeTab } from './tabs/HomeTab';
+import { AboutTab } from './tabs/AboutTab';
 import {
   TabType,
   getTabTypeConfig,

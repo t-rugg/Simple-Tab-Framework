@@ -55,7 +55,9 @@
   },
   "data": {
     "description": "Ceci est un onglet de données. Vous pouvez personnaliser son contenu et ses fonctionnalités selon vos besoins.",
-    "editHint": "Cliquer sur le texte de l'en-tête permet de modifier le nom de l'onglet."
+    "editHint": "Cliquer sur le texte de l'en-tête permet de modifier le nom de l'onglet.",
+    "showRibbon": "Afficher la bande",
+    "hideRibbon": "Masquer la bande"
   },
   "theme": {
     "light": "Clair",

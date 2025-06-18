@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import './TabContent.css';
-import { RibbonType, isValidHexColor } from '../styles/RibbonStyles';
-import { TabFactory, TabComponentProps, Tab } from '../types/tabs';
+import '../TabContent.css';
+import { RibbonType, isValidHexColor } from '../../styles/RibbonStyles';
+import { TabFactory, TabComponentProps, Tab } from '../../types/tabs';
 
 interface DataTabProps extends TabComponentProps {
   title: string;
@@ -104,7 +104,7 @@ export const DataTab: React.FC<DataTabProps> & Tab = ({
       <div className="ribbon-controls">
         <div className="ribbon-control-group">
           <button className="toggle-button" onClick={handleRibbonToggle}>
-            {isRibbonVisible ? 'Hide Ribbon' : 'Show Ribbon'}
+            {isRibbonVisible ? t('data.hideRibbon') : t('data.showRibbon')}
           </button>
           <label className="color-picker-wrapper">
             <input

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import './TabContent.css';
-import { TabFactory, TabComponentProps, Tab } from '../types/tabs';
+import '../TabContent.css';
+import { TabFactory, TabComponentProps, Tab } from '../../types/tabs';
 
 export class AboutTabFactory implements TabFactory {
   getRequiredCallbacks(): string[] {
