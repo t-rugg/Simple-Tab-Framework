@@ -51,5 +51,9 @@
     "close": "Fermer",
     "save": "Enregistrer",
     "cancel": "Annuler"
+  },
+  "dropdown": {
+    "changeView": "Changer la vue",
+    "closeTab": "Fermer l'onglet"
   }
 } 

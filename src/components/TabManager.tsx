@@ -11,6 +11,7 @@ import { TabType, getTabTypeConfig } from '../types/tabs';
 import { TabBar } from './TabBar';
 import { RibbonType } from '../styles/RibbonStyles';
 import './ViewDivider.css';
+import './TabManager.css';
 
 // temp
 const randomEmojis = [
@@ -628,24 +629,11 @@ export const TabManager: React.FC = () => {
                             key={group.id} 
                             className="tab-group"
                             style={{ 
-                                flex: tabGroups.length === 1 ? 1 : (groupIndex === 0 ? viewRatio : 1 - viewRatio),
-                                minWidth: 0,
-                                display: 'flex',
-                                flexDirection: 'column',
-                                position: 'relative'
+                                flex: tabGroups.length === 1 ? 1 : (groupIndex === 0 ? viewRatio : 1 - viewRatio)
                             }}
                         >
                             <div 
                                 className="tabs-container"
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    padding: 0,
-                                    backgroundColor: 'var(--bgSecondary)',
-                                    borderBottom: '1px solid var(--borderColor)',
-                                    overflowX: 'auto',
-                                    whiteSpace: 'nowrap'
-                                }}
                                 onContextMenu={(e) => {
                                     e.preventDefault();
                                     if (showDropdown) {

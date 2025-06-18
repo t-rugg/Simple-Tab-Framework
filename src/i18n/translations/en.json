@@ -51,5 +51,9 @@
     "close": "Close",
     "save": "Save",
     "cancel": "Cancel"
+  },
+  "dropdown": {
+    "changeView": "Change View",
+    "closeTab": "Close Tab"
   }
 } 

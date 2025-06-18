@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Tab } from './Tab';
 import { TabType } from '../types/tabs';
 import { RibbonType } from '../styles/RibbonStyles';
+import './TabBar.css';
 
 interface TabBarProps {
     tabs: Array<{ id: string; title: string; emoji: string; type: TabType; ribbon?: string }>;
@@ -45,11 +46,6 @@ export const TabBar: React.FC<TabBarProps> = ({
         <div 
             className="tab-bar"
             onContextMenu={handleContextMenu}
-            style={{
-                display: 'flex',
-                alignItems: 'center',
-                flex: 1
-            }}
         >
             {tabs.map((tab, index) => (
                 <Tab
@@ -76,17 +72,6 @@ export const TabBar: React.FC<TabBarProps> = ({
             <button 
                 className="add-tab-button" 
                 onClick={onAddTab}
-                style={{
-                    background: 'none',
-                    border: 'none',
-                    padding: '4px 8px',
-                    cursor: 'pointer',
-                    fontSize: '1.2em',
-                    color: 'var(--textSecondary)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                }}
             >
                 +
             </button>

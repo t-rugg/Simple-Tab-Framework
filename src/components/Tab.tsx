@@ -3,6 +3,7 @@ import { useDrag, useDrop } from 'react-dnd';
 import { useDragLayer } from 'react-dnd';
 import { TabDropdown } from './TabDropdown';
 import { RibbonType } from '../styles/RibbonStyles';
+import './Tab.css';
 
 interface DragItem {
     id: string;

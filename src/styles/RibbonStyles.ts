@@ -1,7 +1,6 @@
 // Define the type for ribbon colors - can be 'none' or any hex color
 export type RibbonType = 'none' | string;
 
-// CSS styles for ribbons
 export const ribbonStyles = `
 .tab {
     position: relative;
@@ -13,7 +12,7 @@ export const ribbonStyles = `
     position: absolute;
     top: 0;
     left: 0;
-    width: var(--ribbonWidth, 4px);
+    width: var(--ribbonWidth, 6px);
     height: 100%;
     background-color: var(--ribbonColor);
     border-radius: 2px 0 0 2px;
