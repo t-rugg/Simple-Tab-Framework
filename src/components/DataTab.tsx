@@ -12,12 +12,12 @@ interface DataTabProps extends TabComponentProps {
   onRibbonChange: (color: RibbonType) => void;
 }
 
-export const DataTab: React.FC<DataTabProps> & Tab = ({ 
+export const DataTab: React.FC<DataTabProps> & Tab = ({
   title,
   onTitleChange,
   ribbon = 'none',
   ribbonColor = '#000000',
-  onRibbonChange
+  onRibbonChange,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(title);
@@ -96,16 +96,14 @@ export const DataTab: React.FC<DataTabProps> & Tab = ({
       </div>
       <div className="content-box">
         <p>
-          {t('data.description')}<br/>
+          {t('data.description')}
+          <br />
           {t('data.editHint')}
         </p>
       </div>
       <div className="ribbon-controls">
         <div className="ribbon-control-group">
-          <button
-            className="toggle-button"
-            onClick={handleRibbonToggle}
-          >
+          <button className="toggle-button" onClick={handleRibbonToggle}>
             {isRibbonVisible ? 'Hide Ribbon' : 'Show Ribbon'}
           </button>
           <label className="color-picker-wrapper">
@@ -113,7 +111,7 @@ export const DataTab: React.FC<DataTabProps> & Tab = ({
               type="color"
               value={colorInput}
               onChange={handleColorChange}
-              onClick={(e) => e.stopPropagation()}
+              onClick={e => e.stopPropagation()}
             />
           </label>
         </div>
@@ -129,56 +127,118 @@ DataTab.render = (props?: any) => <DataTab {...props} />;
 
 // Helper for random color and emoji
 const randomEmojis = [
-    '🌟', '🎨', '📝', '💡', '🎮',
-    '🎵', '📚', '🎯', '🎪', '🎭',
-    '🎬', '🎤', '🎧', '🎹', '🎸',
-    '🎺', '🎻', '🎼', '📱', '💻',
-    '⌨️', '🖥️', '🖨️', '🖱️', '⌚',
-    '📷', '🎥', '📹', '🎞️', '📽️',
-    '🎟️', '🎫', '🎗️', '🎖️', '🏆',
-    '🎲', '🎰', '🎳', '🎱', '🎾',
-    '🏀', '⚽', '🏈', '⚾', '🏐',
-    '🏉', '🏓', '🏸', '🏒', '🏑',
-    '🏏', '🎿', '⛷️', '🏂', '🏋️',
-    '🤼', '🤸', '⛹️', '🤾', '🏌️',
-    '🏄', '🏊', '🤽', '🚣', '🏇',
-    '🚴', '🚵', '🤹'
+  '🌟',
+  '🎨',
+  '📝',
+  '💡',
+  '🎮',
+  '🎵',
+  '📚',
+  '🎯',
+  '🎪',
+  '🎭',
+  '🎬',
+  '🎤',
+  '🎧',
+  '🎹',
+  '🎸',
+  '🎺',
+  '🎻',
+  '🎼',
+  '📱',
+  '💻',
+  '⌨️',
+  '🖥️',
+  '🖨️',
+  '🖱️',
+  '⌚',
+  '📷',
+  '🎥',
+  '📹',
+  '🎞️',
+  '📽️',
+  '🎟️',
+  '🎫',
+  '🎗️',
+  '🎖️',
+  '🏆',
+  '🎲',
+  '🎰',
+  '🎳',
+  '🎱',
+  '🎾',
+  '🏀',
+  '⚽',
+  '🏈',
+  '⚾',
+  '🏐',
+  '🏉',
+  '🏓',
+  '🏸',
+  '🏒',
+  '🏑',
+  '🏏',
+  '🎿',
+  '⛷️',
+  '🏂',
+  '🏋️',
+  '🤼',
+  '🤸',
+  '⛹️',
+  '🤾',
+  '🏌️',
+  '🏄',
+  '🏊',
+  '🤽',
+  '🚣',
+  '🏇',
+  '🚴',
+  '🚵',
+  '🤹',
 ];
 
 export class DataTabFactory implements TabFactory {
-    getRequiredCallbacks(): string[] {
-        return ['onTitleChange', 'onRibbonChange'];
-    }
+  getRequiredCallbacks(): string[] {
+    return ['onTitleChange', 'onRibbonChange'];
+  }
 
-    createTabProps({
-        title,
-        emoji,
-        ribbon,
-        ribbonColor,
-        onTitleChange,
-        onRibbonChange
-    }: { 
-        id: string; 
-        title: string; 
-        emoji?: string; 
-        ribbon?: string; 
-        ribbonColor?: string;
-        onTitleChange?: (newTitle: string) => void;
-        onRibbonChange?: (newRibbon: any) => void;
-    }) {
-        // Only randomize if the value is truly undefined
-        const color = ribbonColor !== undefined ? ribbonColor : `#${Math.floor(Math.random()*16777215).toString(16).padStart(6, '0')}`;
-        return {
-            title,
-            emoji: emoji !== undefined ? emoji : randomEmojis[Math.floor(Math.random() * randomEmojis.length)],
-            type: 'data',
-            ribbon: ribbon !== undefined ? ribbon : color,
-            ribbonColor: color,
-            onTitleChange,
-            onRibbonChange
-        };
-    }
+  createTabProps({
+    title,
+    emoji,
+    ribbon,
+    ribbonColor,
+    onTitleChange,
+    onRibbonChange,
+  }: {
+    id: string;
+    title: string;
+    emoji?: string;
+    ribbon?: string;
+    ribbonColor?: string;
+    onTitleChange?: (newTitle: string) => void;
+    onRibbonChange?: (newRibbon: any) => void;
+  }) {
+    // Only randomize if the value is truly undefined
+    const color =
+      ribbonColor !== undefined
+        ? ribbonColor
+        : `#${Math.floor(Math.random() * 16777215)
+            .toString(16)
+            .padStart(6, '0')}`;
+    return {
+      title,
+      emoji:
+        emoji !== undefined
+          ? emoji
+          : randomEmojis[Math.floor(Math.random() * randomEmojis.length)],
+      type: 'data',
+      ribbon: ribbon !== undefined ? ribbon : color,
+      ribbonColor: color,
+      onTitleChange,
+      onRibbonChange,
+    };
+  }
 }
 
 // Add static factory property to the component
-DataTab.factory = new DataTabFactory(); 
+DataTab.factory = new DataTabFactory();

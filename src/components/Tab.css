@@ -1,122 +1,124 @@
 .tab {
-    display: flex;
-    align-items: center;
-    padding: 4px 12px;
-    background-color: var(--bgSecondary);
-    border-right: 1px solid var(--borderColor);
-    cursor: pointer;
-    user-select: none;
-    position: relative;
-    min-width: fit-content;
-    max-width: none;
-    transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  padding: 4px 12px;
+  background-color: var(--bgSecondary);
+  border-right: 1px solid var(--borderColor);
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  min-width: fit-content;
+  max-width: none;
+  transition: all 0.2s ease;
 }
 
 .tab.animate {
-    animation: tabFadeIn 0.2s ease;
+  animation: tabFadeIn 0.2s ease;
 }
 
 .tab.removing {
-    animation: tabFadeOut 0.2s ease forwards;
+  animation: tabFadeOut 0.2s ease forwards;
 }
 
 @keyframes tabFadeIn {
-    from {
-        opacity: 0;
-        transform: translateX(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 @keyframes tabFadeOut {
-    from {
-        opacity: 1;
-        transform: translateX(0);
-    }
-    to {
-        opacity: 0;
-        transform: translateX(-20px);
-    }
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
 }
 
 .tab:hover {
-    background-color: var(--bgHover);
+  background-color: var(--bgHover);
 }
 
 .tab.active {
-    background-color: var(--bgPrimary);
+  background-color: var(--bgPrimary);
 }
 
 .tab.active::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background-color: var(--accentColor);
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--accentColor);
 }
 
 .tab.dragging {
-    opacity: 0.5;
+  opacity: 0.5;
 }
 
 .tab-emoji {
-    margin-right: 8px;
-    font-size: 1.1em;
-    width: 1.2em;
-    text-align: center;
-    display: inline-block;
-    transition: all 0.2s ease;
+  margin-right: 8px;
+  font-size: 1.1em;
+  width: 1.2em;
+  text-align: center;
+  display: inline-block;
+  transition: all 0.2s ease;
 }
 
 .tab-emoji.hidden {
-    width: 0;
-    margin-right: 0;
-    opacity: 0;
+  width: 0;
+  margin-right: 0;
+  opacity: 0;
 }
 
 .tab-title {
-    flex: 0 1 auto;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    transition: all 0.2s ease;
-    margin-right: 0;
-    max-width: var(--tabTitleMaxLength);
+  flex: 0 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  margin-right: 0;
+  max-width: var(--tabTitleMaxLength);
 }
 
 .close-button {
-    background: none;
-    border: none;
-    padding: 2px;
-    cursor: pointer;
-    color: var(--textSecondary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-left: 6px;
-    transition: all 0.2s ease;
-    opacity: 0;
-    width: 0;
-    overflow: hidden;
-    flex: 0 0 auto;
+  background: none;
+  border: none;
+  padding: 2px;
+  cursor: pointer;
+  color: var(--textSecondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 6px;
+  transition: all 0.2s ease;
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+  flex: 0 0 auto;
 }
 
 .tab.active .close-button {
-    opacity: 1;
-    width: auto;
-    margin-left: 2px;
+  opacity: 1;
+  width: auto;
+  margin-left: 2px;
 }
 
 .tab.active .tab-title {
-    margin-right: 16px;
+  margin-right: 16px;
 }
 
 .close-button:hover {
-    color: var(--closeHover);
-    text-shadow: 0 0 3px var(--closeHover);
+  color: var(--closeHover);
+  text-shadow: 0 0 3px var(--closeHover);
 }

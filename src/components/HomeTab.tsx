@@ -4,17 +4,17 @@ import './TabContent.css';
 import { TabFactory, TabComponentProps, Tab } from '../types/tabs';
 
 export class HomeTabFactory implements TabFactory {
-    getRequiredCallbacks(): string[] {
-        return [];
-    }
+  getRequiredCallbacks(): string[] {
+    return [];
+  }
 
-    createTabProps({ title }: { id: string; title: string }) {
-        return {
-            title,
-            emoji: '🏠',
-            type: 'home'
-        };
-    }
+  createTabProps({ title }: { id: string; title: string }) {
+    return {
+      title,
+      emoji: '🏠',
+      type: 'home',
+    };
+  }
 }
 
 export const HomeTab: React.FC<TabComponentProps> & Tab = () => {
@@ -44,4 +44,4 @@ HomeTab.getType = () => 'home';
 HomeTab.render = (props?: any) => <HomeTab {...props} />;
 
 // Add static factory property to the component
-HomeTab.factory = new HomeTabFactory(); 
+HomeTab.factory = new HomeTabFactory();

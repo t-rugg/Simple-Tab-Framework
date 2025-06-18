@@ -25,12 +25,12 @@ export const ribbonStyles = `
 
 // Function to validate if a string is a valid hex color
 export const isValidHexColor = (color: string): boolean => {
-    return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(color);
+  return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(color);
 };
 
 // Inject the ribbonStyles CSS into the DOM
 if (typeof document !== 'undefined') {
-    const style = document.createElement('style');
-    style.textContent = ribbonStyles;
-    document.head.appendChild(style);
+  const style = document.createElement('style');
+  style.textContent = ribbonStyles;
+  document.head.appendChild(style);
 }

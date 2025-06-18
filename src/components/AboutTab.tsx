@@ -4,17 +4,17 @@ import './TabContent.css';
 import { TabFactory, TabComponentProps, Tab } from '../types/tabs';
 
 export class AboutTabFactory implements TabFactory {
-    getRequiredCallbacks(): string[] {
-        return [];
-    }
+  getRequiredCallbacks(): string[] {
+    return [];
+  }
 
-    createTabProps({ title }: { id: string; title: string }) {
-        return {
-            title,
-            emoji: 'ℹ️',
-            type: 'about'
-        };
-    }
+  createTabProps({ title }: { id: string; title: string }) {
+    return {
+      title,
+      emoji: 'ℹ️',
+      type: 'about',
+    };
+  }
 }
 
 export const AboutTab: React.FC<TabComponentProps> & Tab = () => {
@@ -46,4 +46,4 @@ AboutTab.getType = () => 'about';
 AboutTab.render = (props?: any) => <AboutTab {...props} />;
 
 // Add static factory property to the component
-AboutTab.factory = new AboutTabFactory(); 
+AboutTab.factory = new AboutTabFactory();

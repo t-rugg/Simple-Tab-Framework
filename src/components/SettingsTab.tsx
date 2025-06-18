@@ -16,59 +16,69 @@ interface SettingsTabProps extends TabComponentProps {
 }
 
 export class SettingsTabFactory implements TabFactory {
-    getRequiredCallbacks(): string[] {
-        return ['onToggleEmojis', 'onCloseAllTabs', 'onMaxTabWidthChange', 'onRibbonWidthChange', 'showEmojis', 'maxTabWidth', 'ribbonWidth'];
-    }
+  getRequiredCallbacks(): string[] {
+    return [
+      'onToggleEmojis',
+      'onCloseAllTabs',
+      'onMaxTabWidthChange',
+      'onRibbonWidthChange',
+      'showEmojis',
+      'maxTabWidth',
+      'ribbonWidth',
+    ];
+  }
 
-    createTabProps({ 
-        title, 
-        showEmojis,
-        onToggleEmojis,
-        onCloseAllTabs,
-        maxTabWidth,
-        onMaxTabWidthChange,
-        ribbonWidth,
-        onRibbonWidthChange
-    }: { 
-        id: string; 
-        title: string;
-        emoji?: string;
-        showEmojis?: boolean;
-        onToggleEmojis?: () => void;
-        onCloseAllTabs?: (e?: React.MouseEvent) => void;
-        maxTabWidth?: number;
-        onMaxTabWidthChange?: (width: number) => void;
-        ribbonWidth?: number;
-        onRibbonWidthChange?: (width: number) => void;
-    }) {
-        return {
-            title,
-            emoji: '⚙️',
-            type: 'settings',
-            showEmojis,
-            onToggleEmojis,
-            onCloseAllTabs,
-            maxTabWidth,
-            onMaxTabWidthChange,
-            ribbonWidth,
-            onRibbonWidthChange
-        };
-    }
+  createTabProps({
+    title,
+    showEmojis,
+    onToggleEmojis,
+    onCloseAllTabs,
+    maxTabWidth,
+    onMaxTabWidthChange,
+    ribbonWidth,
+    onRibbonWidthChange,
+  }: {
+    id: string;
+    title: string;
+    emoji?: string;
+    showEmojis?: boolean;
+    onToggleEmojis?: () => void;
+    onCloseAllTabs?: (e?: React.MouseEvent) => void;
+    maxTabWidth?: number;
+    onMaxTabWidthChange?: (width: number) => void;
+    ribbonWidth?: number;
+    onRibbonWidthChange?: (width: number) => void;
+  }) {
+    return {
+      title,
+      emoji: '⚙️',
+      type: 'settings',
+      showEmojis,
+      onToggleEmojis,
+      onCloseAllTabs,
+      maxTabWidth,
+      onMaxTabWidthChange,
+      ribbonWidth,
+      onRibbonWidthChange,
+    };
+  }
 }
 
-export const SettingsTab: React.FC<SettingsTabProps> & Tab = ({ 
-  showEmojis, 
+export const SettingsTab: React.FC<SettingsTabProps> & Tab = ({
+  showEmojis,
   onToggleEmojis,
   onCloseAllTabs,
   maxTabWidth,
   onMaxTabWidthChange,
   ribbonWidth,
-  onRibbonWidthChange
+  onRibbonWidthChange,
 }) => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showImportConfirmation, setShowImportConfirmation] = useState(false);
   const [showClearConfirmation, setShowClearConfirmation] = useState(false);
-  const [importData, setImportData] = useState<{ [key: string]: string } | null>(null);
+  const [importData, setImportData] = useState<{
+    [key: string]: string;
+  } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { themeName } = useTheme();
   const { t, i18n } = useTranslation();
@@ -107,7 +117,9 @@ export const SettingsTab: React.FC<SettingsTabProps> & Tab = ({
       }
     }
 
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
+      type: 'application/json',
+    });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -127,7 +139,7 @@ export const SettingsTab: React.FC<SettingsTabProps> & Tab = ({
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (event) => {
+    reader.onload = event => {
       try {
         const data = JSON.parse(event.target?.result as string);
         setImportData(data);
@@ -145,7 +157,7 @@ export const SettingsTab: React.FC<SettingsTabProps> & Tab = ({
 
     try {
       localStorage.clear();
-      
+
       Object.entries(importData).forEach(([key, value]) => {
         localStorage.setItem(key, value);
       });
@@ -190,10 +202,7 @@ export const SettingsTab: React.FC<SettingsTabProps> & Tab = ({
         </div>
         <h2>{t('settings.tabSettings')}</h2>
         <div className="settings-group">
-          <button
-            className="toggle-button"
-            onClick={onToggleEmojis}
-          >
+          <button className="toggle-button" onClick={onToggleEmojis}>
             {showEmojis ? t('settings.hideEmojis') : t('settings.showEmojis')}
           </button>
         </div>
@@ -234,16 +243,10 @@ export const SettingsTab: React.FC<SettingsTabProps> & Tab = ({
         <div className="settings-group">
           <h2>{t('settings.manageData')}</h2>
           <div className="button-group">
-            <button
-              className="toggle-button"
-              onClick={handleExportData}
-            >
+            <button className="toggle-button" onClick={handleExportData}>
               {t('settings.exportData')}
             </button>
-            <button
-              className="toggle-button"
-              onClick={handleImportClick}
-            >
+            <button className="toggle-button" onClick={handleImportClick}>
               {t('settings.importData')}
             </button>
             <button
@@ -266,7 +269,7 @@ export const SettingsTab: React.FC<SettingsTabProps> & Tab = ({
             <div className="confirm-dialog">
               <p>{t('settings.confirmCloseAll.message')}</p>
               <div className="confirm-dialog-buttons">
-                <button 
+                <button
                   className="danger-button"
                   onClick={() => {
                     onCloseAllTabs();
@@ -290,10 +293,7 @@ export const SettingsTab: React.FC<SettingsTabProps> & Tab = ({
             <div className="confirm-dialog">
               <p>{t('settings.confirmImport.message')}</p>
               <div className="confirm-dialog-buttons">
-                <button 
-                  className="danger-button"
-                  onClick={handleImportConfirm}
-                >
+                <button className="danger-button" onClick={handleImportConfirm}>
                   {t('settings.confirmImport.yes')}
                 </button>
                 <button
@@ -314,7 +314,7 @@ export const SettingsTab: React.FC<SettingsTabProps> & Tab = ({
             <div className="confirm-dialog">
               <p>{t('settings.confirmClear.message')}</p>
               <div className="confirm-dialog-buttons">
-                <button 
+                <button
                   className="danger-button"
                   onClick={() => {
                     handleClearData();
@@ -344,4 +344,4 @@ SettingsTab.getType = () => 'settings';
 SettingsTab.render = (props?: any) => <SettingsTab {...props} />;
 
 // Add static factory property to the component
-SettingsTab.factory = new SettingsTabFactory(); 
+SettingsTab.factory = new SettingsTabFactory();

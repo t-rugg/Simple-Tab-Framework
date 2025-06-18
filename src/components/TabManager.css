@@ -1,34 +1,34 @@
 .tab-manager {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .tab-groups {
-    display: flex;
-    flex: 1;
-    min-height: 0;
+  display: flex;
+  flex: 1;
+  min-height: 0;
 }
 
 .tab-group {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    position: relative;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 }
 
 .tabs-container {
-    display: flex;
-    align-items: center;
-    padding: 0;
-    background-color: var(--bgSecondary);
-    border-bottom: 1px solid var(--borderColor);
-    overflow-x: auto;
-    white-space: nowrap;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  background-color: var(--bgSecondary);
+  border-bottom: 1px solid var(--borderColor);
+  overflow-x: auto;
+  white-space: nowrap;
 }
 
 .tab-content {
-    flex: 1;
-    overflow: auto;
-    position: relative;
-} 
+  flex: 1;
+  overflow: auto;
+  position: relative;
+}

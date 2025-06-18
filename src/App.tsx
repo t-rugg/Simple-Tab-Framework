@@ -7,16 +7,16 @@ import './themes.css';
 import './styles/RibbonStyles';
 
 function App() {
-    return (
-        <ThemeProvider>
-            <ToastProvider>
-                <div className="app">
-                    <TabManager />
-                    <ThemeToggle />
-                </div>
-            </ToastProvider>
-        </ThemeProvider>
-    );
+  return (
+    <ThemeProvider>
+      <ToastProvider>
+        <div className="app">
+          <TabManager />
+          <ThemeToggle />
+        </div>
+      </ToastProvider>
+    </ThemeProvider>
+  );
 }
 
-export default App; 
+export default App;

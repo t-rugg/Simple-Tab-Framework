@@ -1,6 +1,6 @@
 # Simple Tab Framework
 
-A simple, flexible tab management system built with React and TypeScript. This is intentionally a lightweight framework with no functionality for the actual usage of the tabs; it can be iterated on appropriately. 
+A simple, flexible tab management system built with React and TypeScript. This is intentionally a lightweight framework with no functionality for the actual usage of the tabs; it can be iterated on appropriately.
 
 ## Features
 
@@ -19,22 +19,26 @@ A simple, flexible tab management system built with React and TypeScript. This i
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/t-rugg/Simple-Tab-Framework.git
 cd simple-tab-framework
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Start the development server:
+
 ```bash
 npm start
 ```
 
 After performing the above steps, the project can be built with:
+
 ```bash
 npm run build
 ```
