@@ -38,6 +38,23 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
     <div className="settings-tab" data-theme={themeName}>
       <h1>{t('settings.title')}</h1>
       <div className="settings-container">
+      <div className="settings-group">
+        <h2>{t('settings.language')}</h2>
+          <div className="language-buttons">
+            <button
+              className={`language-button ${i18n.language === 'en' ? 'active' : ''}`}
+              onClick={() => changeLanguage('en')}
+            >
+              EN
+            </button>
+            <button
+              className={`language-button ${i18n.language === 'fr' ? 'active' : ''}`}
+              onClick={() => changeLanguage('fr')}
+            >
+              FR
+            </button>
+          </div>
+        </div>
         <h2>{t('settings.tabSettings')}</h2>
         <div className="settings-group">
           <button
@@ -58,23 +75,6 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
               onChange={handleMaxWidthChange}
               className="range-input"
             />
-          </div>
-        </div>
-        <div className="settings-group">
-          <h3>{t('settings.language')}</h3>
-          <div className="language-buttons">
-            <button
-              className={`language-button ${i18n.language === 'en' ? 'active' : ''}`}
-              onClick={() => changeLanguage('en')}
-            >
-              EN
-            </button>
-            <button
-              className={`language-button ${i18n.language === 'fr' ? 'active' : ''}`}
-              onClick={() => changeLanguage('fr')}
-            >
-              FR
-            </button>
           </div>
         </div>
         <div className="settings-group">
