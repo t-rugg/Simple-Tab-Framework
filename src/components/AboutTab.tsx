@@ -1,8 +1,23 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import './TabContent.css';
+import { TabFactory, TabComponentProps, Tab } from '../types/tabs';
 
-export const AboutTab: React.FC = () => {
+export class AboutTabFactory implements TabFactory {
+    getRequiredCallbacks(): string[] {
+        return [];
+    }
+
+    createTabProps({ title }: { id: string; title: string }) {
+        return {
+            title,
+            emoji: 'ℹ️',
+            type: 'about'
+        };
+    }
+}
+
+export const AboutTab: React.FC<TabComponentProps> & Tab = () => {
   const { t } = useTranslation();
 
   return (
@@ -23,4 +38,12 @@ export const AboutTab: React.FC = () => {
       </div>
     </div>
   );
-}; 
+};
+
+// Implement the Tab interface methods
+AboutTab.getTitle = () => 'About';
+AboutTab.getType = () => 'about';
+AboutTab.render = (props?: any) => <AboutTab {...props} />;
+
+// Add static factory property to the component
+AboutTab.factory = new AboutTabFactory(); 

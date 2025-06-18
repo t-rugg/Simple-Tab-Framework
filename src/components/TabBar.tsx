@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Tab } from './Tab';
-import { TabType } from '../types/tabs';
+import { TabInstance } from '../types/tabs';
 import { RibbonType } from '../styles/RibbonStyles';
 import './TabBar.css';
 
 interface TabBarProps {
-    tabs: Array<{ id: string; title: string; emoji: string; type: TabType; ribbon?: string }>;
+    tabs: TabInstance[];
     activeTabId: string | null;
     onTabSelect: (id: string) => void;
     onTabClose: (id: string) => void;
@@ -47,28 +47,35 @@ export const TabBar: React.FC<TabBarProps> = ({
             className="tab-bar"
             onContextMenu={handleContextMenu}
         >
-            {tabs.map((tab, index) => (
-                <Tab
-                    key={tab.id}
-                    id={tab.id}
-                    title={tab.title}
-                    isActive={tab.id === activeTabId}
-                    onSelect={() => onTabSelect(tab.id)}
-                    onClose={() => onTabClose(tab.id)}
-                    onMove={onTabMove}
-                    onSplit={() => onTabSplit(tab.id)}
-                    index={index}
-                    showEmoji={showEmojis}
-                    emoji={tab.emoji}
-                    groupId={groupId}
-                    totalTabCount={totalTabCount}
-                    setViewRatio={setViewRatio}
-                    isRemoving={tab.id === removingTabId}
-                    isRightmost={index === tabs.length - 1}
-                    isNew={tab.id === newTabId}
-                    ribbon={tab.ribbon as RibbonType}
-                />
-            ))}
+            {tabs.map((tabInstance, index) => {
+                const { id, tabComponent, props = {} } = tabInstance;
+                const title = props.title || tabComponent.getTitle?.(props) || 'Unknown';
+                const emoji = props.emoji || '❓';
+                const ribbon = props.ribbon || 'none';
+                
+                return (
+                    <Tab
+                        key={id}
+                        id={id}
+                        title={title}
+                        isActive={id === activeTabId}
+                        onSelect={() => onTabSelect(id)}
+                        onClose={() => onTabClose(id)}
+                        onMove={onTabMove}
+                        onSplit={() => onTabSplit(id)}
+                        index={index}
+                        showEmoji={showEmojis}
+                        emoji={emoji}
+                        groupId={groupId}
+                        totalTabCount={totalTabCount}
+                        setViewRatio={setViewRatio}
+                        isRemoving={id === removingTabId}
+                        isRightmost={index === tabs.length - 1}
+                        isNew={id === newTabId}
+                        ribbon={ribbon as RibbonType}
+                    />
+                );
+            })}
             <button 
                 className="add-tab-button" 
                 onClick={onAddTab}

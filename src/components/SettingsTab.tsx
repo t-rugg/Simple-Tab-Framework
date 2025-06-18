@@ -3,8 +3,9 @@ import { useTranslation } from 'react-i18next';
 import './SettingsTab.css';
 import '../themes.css';
 import { useTheme } from '../context/ThemeContext';
+import { TabFactory, TabComponentProps, Tab } from '../types/tabs';
 
-interface SettingsTabProps {
+interface SettingsTabProps extends TabComponentProps {
   showEmojis: boolean;
   onToggleEmojis: () => void;
   onCloseAllTabs: (e?: React.MouseEvent) => void;
@@ -14,7 +15,48 @@ interface SettingsTabProps {
   onRibbonWidthChange: (width: number) => void;
 }
 
-export const SettingsTab: React.FC<SettingsTabProps> = ({ 
+export class SettingsTabFactory implements TabFactory {
+    getRequiredCallbacks(): string[] {
+        return ['onToggleEmojis', 'onCloseAllTabs', 'onMaxTabWidthChange', 'onRibbonWidthChange', 'showEmojis', 'maxTabWidth', 'ribbonWidth'];
+    }
+
+    createTabProps({ 
+        title, 
+        showEmojis,
+        onToggleEmojis,
+        onCloseAllTabs,
+        maxTabWidth,
+        onMaxTabWidthChange,
+        ribbonWidth,
+        onRibbonWidthChange
+    }: { 
+        id: string; 
+        title: string;
+        emoji?: string;
+        showEmojis?: boolean;
+        onToggleEmojis?: () => void;
+        onCloseAllTabs?: (e?: React.MouseEvent) => void;
+        maxTabWidth?: number;
+        onMaxTabWidthChange?: (width: number) => void;
+        ribbonWidth?: number;
+        onRibbonWidthChange?: (width: number) => void;
+    }) {
+        return {
+            title,
+            emoji: '⚙️',
+            type: 'settings',
+            showEmojis,
+            onToggleEmojis,
+            onCloseAllTabs,
+            maxTabWidth,
+            onMaxTabWidthChange,
+            ribbonWidth,
+            onRibbonWidthChange
+        };
+    }
+}
+
+export const SettingsTab: React.FC<SettingsTabProps> & Tab = ({ 
   showEmojis, 
   onToggleEmojis,
   onCloseAllTabs,
@@ -294,4 +336,12 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
       </div>
     </div>
   );
-}; 
+};
+
+// Implement the Tab interface methods
+SettingsTab.getTitle = () => 'Settings';
+SettingsTab.getType = () => 'settings';
+SettingsTab.render = (props?: any) => <SettingsTab {...props} />;
+
+// Add static factory property to the component
+SettingsTab.factory = new SettingsTabFactory(); 

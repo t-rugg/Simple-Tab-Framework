@@ -1,12 +1,23 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import './TabContent.css';
+import { TabFactory, TabComponentProps, Tab } from '../types/tabs';
 
-interface HomeTabProps {
-  title: string;
+export class HomeTabFactory implements TabFactory {
+    getRequiredCallbacks(): string[] {
+        return [];
+    }
+
+    createTabProps({ title }: { id: string; title: string }) {
+        return {
+            title,
+            emoji: '🏠',
+            type: 'home'
+        };
+    }
 }
 
-export const HomeTab: React.FC<HomeTabProps> = () => {
+export const HomeTab: React.FC<TabComponentProps> & Tab = () => {
   const { t } = useTranslation();
 
   return (
@@ -25,4 +36,12 @@ export const HomeTab: React.FC<HomeTabProps> = () => {
       </div>
     </div>
   );
-}; 
+};
+
+// Implement the Tab interface methods
+HomeTab.getTitle = () => 'Home';
+HomeTab.getType = () => 'home';
+HomeTab.render = (props?: any) => <HomeTab {...props} />;
+
+// Add static factory property to the component
+HomeTab.factory = new HomeTabFactory(); 

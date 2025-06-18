@@ -7,67 +7,65 @@ import { SettingsTab } from './SettingsTab';
 import { DataTab } from './DataTab';
 import { HomeTab } from './HomeTab';
 import { AboutTab } from './AboutTab';
-import { TabType, getTabTypeConfig } from '../types/tabs';
+import { TabType, getTabTypeConfig, TabInstance, TabFactory, TabComponent } from '../types/tabs';
 import { TabBar } from './TabBar';
-import { RibbonType } from '../styles/RibbonStyles';
 import './ViewDivider.css';
 import './TabManager.css';
 
-// temp
-const randomEmojis = [
-    '🌟', '🎨', '📝', '💡', '🎮',
-    '🎵', '📚', '🎯', '🎪', '🎭',
-    '🎬', '🎤', '🎧', '🎹', '🎸',
-    '🎺', '🎻', '🎼', '📱', '💻',
-    '⌨️', '🖥️', '🖨️', '🖱️', '⌚',
-    '📷', '🎥', '📹', '🎞️', '📽️',
-    '🎟️', '🎫', '🎗️', '🎖️', '🏆',
-    '🎲', '🎰', '🎳', '🎱', '🎾',
-    '🏀', '⚽', '🏈', '⚾', '🏐',
-    '🏉', '🏓', '🏸', '🏒', '🏑',
-    '🏏', '🎿', '⛷️', '🏂', '🏋️',
-    '🤼', '🤸', '⛹️', '🤾', '🏌️',
-    '🏄', '🏊', '🤽', '🚣', '🏇',
-    '🚴', '🚵', '🤹'
-];
-
-interface TabData {
-    id: string;
-    title: string;
-    emoji: string;
-    type: TabType;
-    ribbon?: RibbonType;
-    ribbonColor?: string;
-}
-
 interface TabGroup {
     id: string;
-    tabs: TabData[];
+    tabs: TabInstance[];
     activeTabId: string;
 }
 
 const STORAGE_KEY = 'tab-manager-state';
 
 interface StoredState {
-    tabGroups: TabGroup[];
+    tabGroups: Array<{
+        id: string;
+        tabs: Array<{
+            id: string;
+            type: TabType;
+            props: any;
+        }>;
+        activeTabId: string;
+    }>;
     nextTabId: number;
 }
 
-const defaultState: StoredState = {
+// Registry of tab components
+const tabComponentRegistry: Record<TabType, TabComponent> = {
+    home: HomeTab,
+    data: DataTab,
+    settings: SettingsTab,
+    about: AboutTab
+};
+
+// Dynamically generate factory registry from component registry
+const tabFactoryRegistry: Record<TabType, TabFactory> = Object.fromEntries(
+    Object.entries(tabComponentRegistry).map(([type, component]) => [
+        type as TabType,
+        component.factory
+    ])
+) as Record<TabType, TabFactory>;
+
+// Use tabFactoryRegistry for default Home tab props
+const defaultHomeTabProps = tabFactoryRegistry['home'].createTabProps({ id: '1', title: 'Home' });
+
+const defaultState = {
     tabGroups: [{
         id: '1',
         tabs: [{ 
             id: '1', 
-            title: 'Home',
-            emoji: '🏠',
-            type: 'home'
+            tabComponent: HomeTab,
+            props: defaultHomeTabProps
         }],
         activeTabId: '1'
-    }],
+    }] as TabGroup[],
     nextTabId: 2
 };
 
-const loadStoredState = (): StoredState => {
+const loadStoredState = (): { tabGroups: TabGroup[]; nextTabId: number } => {
     try {
         const stored = localStorage.getItem(STORAGE_KEY);
         if (!stored) return defaultState;
@@ -76,7 +74,36 @@ const loadStoredState = (): StoredState => {
         if (!parsed.tabGroups || !Array.isArray(parsed.tabGroups) || !parsed.nextTabId) {
             return defaultState;
         }
-        return parsed;
+
+        // Reconstruct TabInstance objects from stored data
+        const reconstructedTabGroups: TabGroup[] = parsed.tabGroups.map((group: any) => ({
+            id: group.id,
+            tabs: group.tabs.map((tab: any): TabInstance => {
+                const tabComponent = tabComponentRegistry[tab.type as TabType];
+                if (!tabComponent) {
+                    console.warn(`Unknown tab type: ${tab.type}, falling back to HomeTab`);
+                    return {
+                        id: tab.id,
+                        tabComponent: HomeTab,
+                        props: { ...tab.props, type: 'home' }
+                    };
+                }
+                // Use the factory to reconstruct props, passing all saved props
+                const factory = tabComponent.factory;
+                const props = factory.createTabProps({ ...tab.props, id: tab.id, title: tab.props.title });
+                return {
+                    id: tab.id,
+                    tabComponent,
+                    props
+                };
+            }),
+            activeTabId: group.activeTabId
+        }));
+
+        return {
+            tabGroups: reconstructedTabGroups,
+            nextTabId: parsed.nextTabId
+        };
     } catch (error) {
         console.error('Failed to load stored state:', error);
         return defaultState;
@@ -135,8 +162,19 @@ export const TabManager: React.FC = () => {
     }, [showDropdown]);
 
     useEffect(() => {
+        // Convert TabInstance objects to serializable format for storage
+        const serializableTabGroups = tabGroups.map(group => ({
+            id: group.id,
+            tabs: group.tabs.map(tab => ({
+                id: tab.id,
+                type: tab.tabComponent.getType(),
+                props: tab.props
+            })),
+            activeTabId: group.activeTabId
+        }));
+
         const stateToStore: StoredState = {
-            tabGroups,
+            tabGroups: serializableTabGroups,
             nextTabId
         };
         try {
@@ -146,26 +184,75 @@ export const TabManager: React.FC = () => {
         }
     }, [tabGroups, nextTabId]);
 
-    // Update tab titles when language changes
+    // Update tab instances when relevant state changes
     useEffect(() => {
         setTabGroups(prevGroups => {
             return prevGroups.map(group => ({
                 ...group,
                 tabs: group.tabs.map(tab => {
-                    const typeConfig = getTabTypeConfig(tab.type);
+                    const tabType = tab.tabComponent.getType();
+                    const factory = tabFactoryRegistry[tabType as TabType];
+                    
+                    // Get required callbacks for this factory
+                    const requiredCallbacks = factory.getRequiredCallbacks?.() || [];
+                    const callbacks = provideCallbacks(tab.id, requiredCallbacks);
+                    
+                    // Always pass all props, only override id/title/callbacks
+                    const factoryArgs = {
+                        ...tab.props,
+                        id: tab.id,
+                        title: tab.props.title || tab.tabComponent.getTitle(tab.props),
+                        ...callbacks
+                    };
+                    
+                    // Update props using the factory
+                    const updatedProps = factory.createTabProps(factoryArgs);
+                    
+                    return {
+                        ...tab,
+                        props: {
+                            ...tab.props,
+                            ...updatedProps
+                        }
+                    };
+                })
+            }));
+        });
+    }, [showEmojis, maxTabWidth, ribbonWidth]); // Dependencies for settings that affect tab instances
+
+    // Update tab titles when language changes
+    useEffect(() => {
+        // Only update if translations are available and i18n is initialized
+        if (!i18n.isInitialized || !i18n.language) return;
+        
+        setTabGroups(prevGroups => {
+            return prevGroups.map(group => ({
+                ...group,
+                tabs: group.tabs.map(tab => {
+                    const typeConfig = getTabTypeConfig(tab.tabComponent.getType());
+                    
+                    // Only update titles for unique tabs
                     if (typeConfig.isUnique) {
-                        // Only update titles for unique tabs (Home, Settings, About)
-                        return {
-                            ...tab,
-                            title: t(`tabs.${tab.type}`)
-                        };
+                        const expectedTitle = t(`tabs.${tab.tabComponent.getType()}`);
+                        const currentTitle = tab.props?.title;
+                        
+                        // Only update if the translation is valid and different from current
+                        if (expectedTitle && !expectedTitle.startsWith('?') && expectedTitle !== currentTitle) {
+                            return {
+                                ...tab,
+                                props: {
+                                    ...tab.props,
+                                    title: expectedTitle
+                                }
+                            };
+                        }
                     }
-                    // Keep Data tabs unchanged
+                    // For non-unique tabs, preserve the existing title and all other properties
                     return tab;
                 })
             }));
         });
-    }, [i18n.language, t]);
+    }, [i18n.language, t, i18n.isInitialized]);
 
     const handleAddTabClick = (e: React.MouseEvent, groupId: string) => {
         const position = e.type === 'contextmenu' 
@@ -179,6 +266,82 @@ export const TabManager: React.FC = () => {
         setShowDropdown(true);
     };
 
+    // Helper function to provide callbacks based on factory requirements
+    const provideCallbacks = (tabId: string, requiredCallbacks: string[]) => {
+        const callbacks: any = {};
+        
+        if (requiredCallbacks.includes('onTitleChange')) {
+            callbacks.onTitleChange = (newTitle: string) => {
+                setTabGroups(prev => {
+                    const newGroups = [...prev];
+                    const groupIndex = newGroups.findIndex(g => g.tabs.some(t => t.id === tabId));
+                    if (groupIndex === -1) return prev;
+                    const tabIndex = newGroups[groupIndex].tabs.findIndex(t => t.id === tabId);
+                    if (tabIndex === -1) return prev;
+                    newGroups[groupIndex].tabs[tabIndex] = {
+                        ...newGroups[groupIndex].tabs[tabIndex],
+                        props: {
+                            ...newGroups[groupIndex].tabs[tabIndex].props,
+                            title: newTitle
+                        }
+                    };
+                    return newGroups;
+                });
+            };
+        }
+        
+        if (requiredCallbacks.includes('onRibbonChange')) {
+            callbacks.onRibbonChange = (newRibbon: any) => {
+                setTabGroups(prev => {
+                    const newGroups = [...prev];
+                    const groupIndex = newGroups.findIndex(g => g.tabs.some(t => t.id === tabId));
+                    if (groupIndex === -1) return prev;
+                    const tabIndex = newGroups[groupIndex].tabs.findIndex(t => t.id === tabId);
+                    if (tabIndex === -1) return prev;
+                    newGroups[groupIndex].tabs[tabIndex] = {
+                        ...newGroups[groupIndex].tabs[tabIndex],
+                        props: {
+                            ...newGroups[groupIndex].tabs[tabIndex].props,
+                            ribbon: newRibbon,
+                            ribbonColor: newRibbon === 'none' ? newGroups[groupIndex].tabs[tabIndex].props.ribbonColor : newRibbon
+                        }
+                    };
+                    return newGroups;
+                });
+            };
+        }
+        
+        if (requiredCallbacks.includes('onToggleEmojis')) {
+            callbacks.onToggleEmojis = () => setShowEmojis(!showEmojis);
+        }
+        
+        if (requiredCallbacks.includes('onCloseAllTabs')) {
+            callbacks.onCloseAllTabs = closeAllTabs;
+        }
+        
+        if (requiredCallbacks.includes('onMaxTabWidthChange')) {
+            callbacks.onMaxTabWidthChange = setMaxTabWidth;
+        }
+        
+        if (requiredCallbacks.includes('onRibbonWidthChange')) {
+            callbacks.onRibbonWidthChange = setRibbonWidth;
+        }
+        
+        if (requiredCallbacks.includes('showEmojis')) {
+            callbacks.showEmojis = showEmojis;
+        }
+        
+        if (requiredCallbacks.includes('maxTabWidth')) {
+            callbacks.maxTabWidth = maxTabWidth;
+        }
+        
+        if (requiredCallbacks.includes('ribbonWidth')) {
+            callbacks.ribbonWidth = ribbonWidth;
+        }
+        
+        return callbacks;
+    };
+
     const addTab = (type: TabType) => {
         const typeConfig = getTabTypeConfig(type);
         const groupIndex = tabGroups.findIndex(g => g.id === activeGroupId);
@@ -190,7 +353,7 @@ export const TabManager: React.FC = () => {
         // Check if it's a unique tab type that's already open
         if (typeConfig.isUnique) {
             // Find the tab in any group
-            const existingTab = tabGroups.flatMap(g => g.tabs).find(tab => tab.type === type);
+            const existingTab = tabGroups.flatMap(g => g.tabs).find(tab => tab.tabComponent.getType() === type);
             if (existingTab) {
                 // If it's in the current group, just activate it
                 if (group.tabs.find(t => t.id === existingTab.id)) {
@@ -249,57 +412,74 @@ export const TabManager: React.FC = () => {
             }
         }
 
-        // Find the highest tab ID currently in use
-        const highestTabId = tabGroups.reduce((max, group) => {
-            const groupMax = group.tabs.reduce((groupMax, tab) => {
-                const tabId = parseInt(tab.id);
-                return isNaN(tabId) ? groupMax : Math.max(groupMax, tabId);
-            }, 0);
-            return Math.max(max, groupMax);
-        }, 0);
+        const newId = nextTabId.toString();
 
-        const newId = (highestTabId + 1).toString();
-
-        // For non-unique tabs, find the smallest available number
         let displayName = t(`tabs.${type}`);
+        if (!displayName || displayName.startsWith('?')) {
+            const fallbackNames = {
+                home: 'Home',
+                data: 'Data',
+                settings: 'Settings',
+                about: 'About'
+            };
+            displayName = fallbackNames[type] || 'Tab';
+        }
+        
         if (!typeConfig.isUnique) {
-            // Get all existing tab titles of this type
             const existingTitles = tabGroups.flatMap(g => g.tabs)
-                .filter(tab => tab.type === type)
-                .map(tab => tab.title);
+                .filter(tab => tab.tabComponent.getType() === type)
+                .map(tab => tab.tabComponent.getTitle(tab.props));
 
-            // Find the smallest number that's not used
             let number = 1;
-            while (existingTitles.includes(t('tabs.numbered', { name: displayName, number }))) {
+            const numberedTitle = t('tabs.numbered', { name: displayName, number });
+            const fallbackNumberedTitle = `${displayName} ${number}`;
+            let titleToCheck = numberedTitle && !numberedTitle.startsWith('?') ? numberedTitle : fallbackNumberedTitle;
+            
+            while (existingTitles.includes(titleToCheck)) {
                 number++;
+                const nextNumberedTitle = t('tabs.numbered', { name: displayName, number });
+                const nextFallbackNumberedTitle = `${displayName} ${number}`;
+                const nextTitleToCheck = nextNumberedTitle && !nextNumberedTitle.startsWith('?') ? nextNumberedTitle : nextFallbackNumberedTitle;
+                
+                if (nextTitleToCheck === titleToCheck) break;
+                titleToCheck = nextTitleToCheck;
             }
-            displayName = t('tabs.numbered', { name: displayName, number });
+            displayName = titleToCheck;
         }
 
-        const randomColor = type === 'data' ? `#${Math.floor(Math.random()*16777215).toString(16).padStart(6, '0')}` : '#000000';
-        const newTab: TabData = {
-            id: newId,
+        const tabComponent = tabComponentRegistry[type];
+        const factory = tabFactoryRegistry[type];
+        
+        const requiredCallbacks = factory.getRequiredCallbacks?.() || [];
+        const callbacks = provideCallbacks(newId, requiredCallbacks);
+        
+        const factoryArgs = { 
+            id: newId, 
             title: displayName,
-            emoji: typeConfig.isUnique ? typeConfig.emoji : randomEmojis[Math.floor(Math.random() * randomEmojis.length)],
-            type,
-            ribbon: type === 'data' ? randomColor : 'none',
-            ribbonColor: randomColor
+            ...callbacks
+        };
+        
+        const tabProps = factory.createTabProps(factoryArgs);
+        
+        const newTabInstance: TabInstance = {
+            id: newId,
+            tabComponent,
+            props: tabProps
         };
 
         setNewTabId(newId);
-        // Clear the newTabId after animation completes
         setTimeout(() => setNewTabId(null), 200);
 
         setTabGroups(prev => {
             const newGroups = [...prev];
             newGroups[groupIndex] = {
                 ...group,
-                tabs: [...group.tabs, newTab],
+                tabs: [...group.tabs, newTabInstance],
                 activeTabId: newId
             };
             return newGroups;
         });
-        setNextTabId(highestTabId + 2); // Set next ID to be one more than the highest
+        setNextTabId(nextTabId + 1);
     };
 
     const closeTab = (groupId: string, tabId: string) => {
@@ -328,7 +508,6 @@ export const TabManager: React.FC = () => {
                 if (newTabs.length === 0) {
                     // If this was the last tab in the group and there's another group, remove this group
                     if (prev.length > 1) {
-                        // Reset view ratio to 1 when a view is closed
                         setViewRatio(1);
                         return prev.filter(g => g.id !== groupId);
                     }
@@ -395,7 +574,6 @@ export const TabManager: React.FC = () => {
             return;
         }
 
-        // Find source and target group indices
         const sourceGroupIndex = tabGroups.findIndex(g => g.id === sourceGroupId);
         const targetGroupIndex = tabGroups.findIndex(g => g.id === targetGroupId);
 
@@ -430,11 +608,9 @@ export const TabManager: React.FC = () => {
             sourceGroup.activeTabId = sourceGroup.tabs[newActiveIndex].id;
         }
 
-        // Update the groups
+
         newGroups[sourceGroupIndex] = sourceGroup;
         newGroups[targetGroupIndex] = targetGroup;
-
-        // Update state
         setTabGroups(newGroups);
 
         // If source group is now empty, remove it and ensure remaining group has ID "1"
@@ -450,10 +626,10 @@ export const TabManager: React.FC = () => {
     };
 
     const splitView = (groupId: string, tabId: string) => {
-        // If we already have two views, don't create a new one
+        // We only want 2 views
         if (tabGroups.length >= 2) return;
 
-        // Set the view ratio to 50-50 split
+        // Initil view ratio is 50-50
         setViewRatio(0.5);
 
         setTabGroups(prev => {
@@ -498,9 +674,8 @@ export const TabManager: React.FC = () => {
                 id: '1',
                 tabs: [{ 
                     id: '1', 
-                    title: 'Home',
-                    emoji: '🏠',
-                    type: 'home'
+                    tabComponent: HomeTab,
+                    props: defaultHomeTabProps
                 }],
                 activeTabId: '1'
             }]);
@@ -513,72 +688,28 @@ export const TabManager: React.FC = () => {
             id: '1',
             tabs: [{ 
                 id: '1', 
-                title: 'Home',
-                emoji: '🏠',
-                type: 'home'
+                tabComponent: HomeTab,
+                props: defaultHomeTabProps
             }],
             activeTabId: '1'
         }]);
         setNextTabId(2);
     };
 
-    const renderTabContent = (tab: TabData) => {
-        if (tab.type === 'settings') {
-            return <SettingsTab
-                showEmojis={showEmojis}
-                onToggleEmojis={() => setShowEmojis(!showEmojis)}
-                onCloseAllTabs={closeAllTabs}
-                maxTabWidth={maxTabWidth}
-                onMaxTabWidthChange={setMaxTabWidth}
-                ribbonWidth={ribbonWidth}
-                onRibbonWidthChange={setRibbonWidth}
-            />;
+    const renderTabContent = (tabInstance: TabInstance) => {
+        const { tabComponent, props } = tabInstance;
+        
+        if (!tabComponent) {
+            console.error('TabInstance missing tabComponent:', tabInstance);
+            return <div>Error: Invalid tab configuration</div>;
         }
-        if (tab.type === 'data') {
-            const ribbon = tab.ribbon || 'none';
-            const ribbonColor = tab.ribbonColor || '#000000';
-            return <DataTab 
-                title={tab.title} 
-                onTitleChange={(newTitle: string) => {
-                    setTabGroups(prev => {
-                        const newGroups = [...prev];
-                        const groupIndex = newGroups.findIndex(g => g.tabs.some(t => t.id === tab.id));
-                        if (groupIndex === -1) return prev;
-                        const tabIndex = newGroups[groupIndex].tabs.findIndex(t => t.id === tab.id);
-                        if (tabIndex === -1) return prev;
-                        newGroups[groupIndex].tabs[tabIndex] = {
-                            ...newGroups[groupIndex].tabs[tabIndex],
-                            title: newTitle
-                        };
-                        return newGroups;
-                    });
-                }} 
-                ribbon={ribbon}
-                ribbonColor={ribbonColor}
-                onRibbonChange={(newRibbon) => {
-                    setTabGroups(prev => {
-                        const newGroups = [...prev];
-                        const groupIndex = newGroups.findIndex(g => g.tabs.some(t => t.id === tab.id));
-                        if (groupIndex === -1) return prev;
-                        const tabIndex = newGroups[groupIndex].tabs.findIndex(t => t.id === tab.id);
-                        if (tabIndex === -1) return prev;
-                        newGroups[groupIndex].tabs[tabIndex] = {
-                            ...newGroups[groupIndex].tabs[tabIndex],
-                            ribbon: newRibbon,
-                            ribbonColor: newRibbon === 'none' ? newGroups[groupIndex].tabs[tabIndex].ribbonColor : newRibbon
-                        };
-                        return newGroups;
-                    });
-                }}
-            />;
+        
+        try {
+            return tabComponent.render(props);
+        } catch (error) {
+            console.error('Error rendering tab:', error);
+            return <div>Error: Failed to render tab</div>;
         }
-        if (tab.type === 'home') {
-            return <HomeTab title={tab.title} />;
-        }
-        if (tab.type === 'about') {
-            return <AboutTab />;
-        }
-        return <div>{tab.title}</div>;
     };
 
     const handleDividerMouseDown = (e: React.MouseEvent) => {
