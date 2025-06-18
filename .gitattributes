@@ -1,2 +1,7 @@
-# Auto detect text files and perform LF normalization
 * text=auto
+
+*.{js,jsx,ts,tsx,css,scss,json,html,md} text eol=crlf
+*.{cmd,[cC][mM][dD]} text eol=crlf
+*.{bat,[bB][aA][tT]} text eol=crlf
+*.{ps1,[pP][sS]1} text eol=crlf
+*.{sh,[sS][hH]} text eol=lf
