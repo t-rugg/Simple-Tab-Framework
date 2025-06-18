@@ -1,5 +1,3 @@
-import { ribbonWidth } from '../components/SettingsTab';
-
 // Define the type for ribbon colors - can be 'none' or any hex color
 export type RibbonType = 'none' | string;
 
