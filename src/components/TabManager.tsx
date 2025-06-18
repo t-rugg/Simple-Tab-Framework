@@ -9,6 +9,7 @@ import { HomeTab } from './HomeTab';
 import { AboutTab } from './AboutTab';
 import { TabType, getTabTypeConfig } from '../types/tabs';
 import { TabBar } from './TabBar';
+import { RibbonType } from '../styles/RibbonStyles';
 
 // temp
 const randomEmojis = [
@@ -33,6 +34,8 @@ interface TabData {
     title: string;
     emoji: string;
     type: TabType;
+    ribbon?: RibbonType;
+    ribbonColor?: string;
 }
 
 interface TabGroup {
@@ -89,13 +92,26 @@ export const TabManager: React.FC = () => {
     const [viewRatio, setViewRatio] = useState(0.5); // 50-50 split by default
     const [removingTabId, setRemovingTabId] = useState<string | null>(null);
     const [newTabId, setNewTabId] = useState<string | null>(null);
-    const [maxTabWidth, setMaxTabWidth] = useState(16);
+    const [maxTabWidth, setMaxTabWidth] = useState(() => {
+        const stored = localStorage.getItem('maxTabWidth');
+        return stored ? parseInt(stored, 10) : 16;
+    });
+    const [ribbonWidth, setRibbonWidth] = useState(() => {
+        const stored = localStorage.getItem('ribbonWidth');
+        return stored ? parseInt(stored, 10) : 4;
+    });
     const isDragging = useRef(false);
     const { t, i18n } = useTranslation();
 
     useEffect(() => {
         document.documentElement.style.setProperty('--tabTitleMaxLength', `${maxTabWidth}ch`);
+        localStorage.setItem('maxTabWidth', maxTabWidth.toString());
     }, [maxTabWidth]);
+
+    useEffect(() => {
+        document.documentElement.style.setProperty('--ribbonWidth', `${ribbonWidth}px`);
+        localStorage.setItem('ribbonWidth', ribbonWidth.toString());
+    }, [ribbonWidth]);
 
     useEffect(() => {
         const handleGlobalContextMenu = (e: MouseEvent) => {
@@ -509,9 +525,13 @@ export const TabManager: React.FC = () => {
                 onCloseAllTabs={closeAllTabs}
                 maxTabWidth={maxTabWidth}
                 onMaxTabWidthChange={setMaxTabWidth}
+                ribbonWidth={ribbonWidth}
+                onRibbonWidthChange={setRibbonWidth}
             />;
         }
         if (tab.type === 'data') {
+            const ribbon = tab.ribbon || 'none';
+            const ribbonColor = tab.ribbonColor || '#000000';
             return <DataTab 
                 title={tab.title} 
                 onTitleChange={(newTitle: string) => {
@@ -519,10 +539,8 @@ export const TabManager: React.FC = () => {
                         const newGroups = [...prev];
                         const groupIndex = newGroups.findIndex(g => g.tabs.some(t => t.id === tab.id));
                         if (groupIndex === -1) return prev;
-                        
                         const tabIndex = newGroups[groupIndex].tabs.findIndex(t => t.id === tab.id);
                         if (tabIndex === -1) return prev;
-                        
                         newGroups[groupIndex].tabs[tabIndex] = {
                             ...newGroups[groupIndex].tabs[tabIndex],
                             title: newTitle
@@ -530,6 +548,23 @@ export const TabManager: React.FC = () => {
                         return newGroups;
                     });
                 }} 
+                ribbon={ribbon}
+                ribbonColor={ribbonColor}
+                onRibbonChange={(newRibbon) => {
+                    setTabGroups(prev => {
+                        const newGroups = [...prev];
+                        const groupIndex = newGroups.findIndex(g => g.tabs.some(t => t.id === tab.id));
+                        if (groupIndex === -1) return prev;
+                        const tabIndex = newGroups[groupIndex].tabs.findIndex(t => t.id === tab.id);
+                        if (tabIndex === -1) return prev;
+                        newGroups[groupIndex].tabs[tabIndex] = {
+                            ...newGroups[groupIndex].tabs[tabIndex],
+                            ribbon: newRibbon,
+                            ribbonColor: newRibbon === 'none' ? ribbonColor : newRibbon
+                        };
+                        return newGroups;
+                    });
+                }}
             />;
         }
         if (tab.type === 'home') {

@@ -1,3 +1,5 @@
+import { RibbonType } from '../styles/RibbonStyles';
+
 export type TabType = 'home' | 'data' | 'settings' | 'about';
 
 export interface TabTypeConfig {
@@ -6,6 +8,7 @@ export interface TabTypeConfig {
   emoji: string;
   isUnique: boolean;
   addDividerAfter?: boolean;
+  ribbon?: RibbonType;
 }
 
 export const TAB_TYPES: TabTypeConfig[] = [
@@ -20,7 +23,8 @@ export const TAB_TYPES: TabTypeConfig[] = [
     displayName: 'Data',
     emoji: '📊',
     isUnique: false,
-    addDividerAfter: true
+    addDividerAfter: true,
+    ribbon: 'none'
   },
   {
     type: 'settings',

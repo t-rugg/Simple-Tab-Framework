@@ -1,10 +1,11 @@
 {
   "settings": {
     "title": "Settings",
-    "tabSettings": "Tab Settings",
-    "showEmojis": "Show Emojis",
-    "hideEmojis": "Hide Emojis",
+    "tabSettings": "Display Settings",
+    "showEmojis": "Show emojis in tabs",
+    "hideEmojis": "Hide emojis in tabs",
     "maxTabWidth": "Max tab width: {{width}}",
+    "ribbonWidth": "Ribbon width: {{width}}",
     "closeAllTabs": "Close All Tabs",
     "confirmCloseAll": {
       "message": "Are you sure you want to close all tabs? This can't be undone!",

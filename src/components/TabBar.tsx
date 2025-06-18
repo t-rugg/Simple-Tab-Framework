@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Tab } from './Tab';
+import { TabType } from '../types/tabs';
+import { RibbonType } from '../styles/RibbonStyles';
 
 interface TabBarProps {
-    tabs: Array<{ id: string; title: string; emoji: string }>;
+    tabs: Array<{ id: string; title: string; emoji: string; type: TabType; ribbon?: string }>;
     activeTabId: string | null;
     onTabSelect: (id: string) => void;
     onTabClose: (id: string) => void;
@@ -68,6 +70,7 @@ export const TabBar: React.FC<TabBarProps> = ({
                     isRemoving={tab.id === removingTabId}
                     isRightmost={index === tabs.length - 1}
                     isNew={tab.id === newTabId}
+                    ribbon={tab.ribbon as RibbonType}
                 />
             ))}
             <button 

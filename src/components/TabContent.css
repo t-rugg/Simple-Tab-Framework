@@ -94,4 +94,53 @@
 
 .tab-content-wrapper p {
     color: var(--textSecondary);
-} 
+}
+
+.ribbon-controls {
+    padding: 1rem;
+    border-top: 1px solid var(--borderColor);
+}
+
+.ribbon-control-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.color-picker-wrapper {
+    display: inline-flex;
+    align-items: center;
+}
+
+.color-picker-wrapper label {
+    color: var(--textSecondary);
+    font-size: 0.9rem;
+}
+
+.color-picker-wrapper input[type="color"] {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: 2px solid var(--borderColor);
+    border-radius: 4px;
+    cursor: pointer;
+    background: none;
+    vertical-align: middle;
+}
+
+.color-picker-wrapper input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.color-picker-wrapper input[type="color"]::-webkit-color-swatch {
+    border: none;
+    border-radius: 2px;
+}
+
+.color-picker-wrapper input[type="color"]:hover {
+    border-color: var(--accentColor);
+}
+
+.color-picker-wrapper input[type="color"]:active {
+    pointer-events: none;
+}

@@ -1,11 +1,12 @@
 {
   "settings": {
     "title": "Paramètres",
-    "tabSettings": "Paramètres des Onglets",
-    "showEmojis": "Afficher les Emojis",
-    "hideEmojis": "Masquer les Emojis",
+    "tabSettings": "Paramètres d'affichage",
+    "showEmojis": "Afficher les emojis dans les onglets",
+    "hideEmojis": "Masquer les emojis dans les onglets",
     "maxTabWidth": "Largeur maximale des onglets : {{width}}",
-    "closeAllTabs": "Fermer tous les Onglets",
+    "ribbonWidth": "Largeur de la bande : {{width}}",
+    "closeAllTabs": "Fermer tous les onglets",
     "confirmCloseAll": {
       "message": "Êtes-vous sûr de vouloir fermer tous les onglets ? Cette action est irréversible !",
       "yes": "Oui",

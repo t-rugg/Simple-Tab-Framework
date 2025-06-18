@@ -4,6 +4,7 @@ import { ToastProvider } from './context/ToastContext';
 import { ThemeToggle } from './components/ThemeToggle';
 import './App.css';
 import './themes.css';
+import './styles/RibbonStyles';
 
 function App() {
     return (

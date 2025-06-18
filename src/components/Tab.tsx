@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import { useDragLayer } from 'react-dnd';
 import { TabDropdown } from './TabDropdown';
+import { RibbonType } from '../styles/RibbonStyles';
 
 interface DragItem {
     id: string;
@@ -29,41 +30,8 @@ interface TabProps {
     isRemoving?: boolean;
     isRightmost?: boolean;
     isNew?: boolean;
+    ribbon?: RibbonType;
 }
-
-const CustomDragLayer: React.FC = () => {
-    const { isDragging, item, clientOffset } = useDragLayer(monitor => ({
-        isDragging: monitor.isDragging(),
-        item: monitor.getItem(),
-        clientOffset: monitor.getClientOffset()
-    }));
-
-    if (!isDragging || !clientOffset) {
-        return null;
-    }
-
-    const { x, y } = clientOffset;
-
-    return (
-        <div
-            style={{
-                position: 'fixed',
-                pointerEvents: 'none',
-                left: x,
-                top: y,
-                transform: 'translate(-50%, -50%)',
-                opacity: 0.5,
-                zIndex: 1000
-            }}
-        >
-            <div className="tab">
-                <div className="tab-title">
-                    {item.title}
-                </div>
-            </div>
-        </div>
-    );
-};
 
 export const Tab: React.FC<TabProps> = ({
     id,
@@ -80,7 +48,8 @@ export const Tab: React.FC<TabProps> = ({
     totalTabCount,
     setViewRatio,
     isRemoving = false,
-    isNew = false
+    isNew = false,
+    ribbon = 'none'
 }) => {
     const ref = useRef<HTMLDivElement>(null);
     const [] = useState(false);
@@ -257,6 +226,11 @@ export const Tab: React.FC<TabProps> = ({
             <div
                 ref={ref}
                 className={`tab ${isActive ? 'active' : ''} ${isDraggingState ? 'dragging' : ''} ${isRemoving ? 'removing' : ''} ${isNew ? 'animate' : ''}`}
+                data-ribbon={ribbon}
+                style={{
+                    opacity: isDraggingState ? 0.5 : 1,
+                    '--ribbonColor': ribbon !== 'none' ? ribbon : undefined
+                } as React.CSSProperties}
                 onContextMenu={handleContextMenu}
                 onClick={onSelect}
                 title={title}
@@ -283,7 +257,6 @@ export const Tab: React.FC<TabProps> = ({
                 position={dropdownPosition}
                 showChangeView={totalTabCount > 1}
             />
-            <CustomDragLayer />
         </>
     );
 };    

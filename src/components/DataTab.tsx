@@ -1,47 +1,73 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import './TabContent.css';
+import { RibbonType, isValidHexColor } from '../styles/RibbonStyles';
 
 interface DataTabProps {
   title: string;
   onTitleChange: (newTitle: string) => void;
+  ribbon?: RibbonType;
+  ribbonColor?: string;
+  onRibbonChange: (color: RibbonType) => void;
 }
 
 export const DataTab: React.FC<DataTabProps> = ({ 
   title,
-  onTitleChange
+  onTitleChange,
+  ribbon = 'none',
+  ribbonColor = '#000000',
+  onRibbonChange
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(title);
   const { t } = useTranslation();
+  const [colorInput, setColorInput] = useState(ribbonColor);
+  const [isRibbonVisible, setIsRibbonVisible] = useState(ribbon !== 'none');
 
   useEffect(() => {
-    setEditValue(title);
-  }, [title]);
+    if (ribbon !== 'none') {
+      setColorInput(ribbonColor);
+      setIsRibbonVisible(true);
+    } else {
+      setIsRibbonVisible(false);
+    }
+  }, [ribbon, ribbonColor]);
 
-  const handleSubmit = () => {
+  const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newColor = e.target.value;
+    setColorInput(newColor);
+    if (isValidHexColor(newColor) && isRibbonVisible) {
+      onRibbonChange(newColor);
+    }
+  };
+
+  const handleRibbonToggle = () => {
+    const newVisibility = !isRibbonVisible;
+    setIsRibbonVisible(newVisibility);
+    onRibbonChange(newVisibility ? colorInput : 'none');
+  };
+
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEditValue(e.target.value);
+  };
+
+  const handleTitleSubmit = () => {
     if (editValue.trim()) {
       onTitleChange(editValue);
-    } else {
-      setEditValue(title); // Reset to original if empty
     }
     setIsEditing(false);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
-      handleSubmit();
+      handleTitleSubmit();
     } else if (e.key === 'Escape') {
       setEditValue(title);
       setIsEditing(false);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEditValue(e.target.value);
-  };
-
-  const handleClick = () => {
+  const handleTitleClick = () => {
     setIsEditing(true);
   };
 
@@ -53,13 +79,13 @@ export const DataTab: React.FC<DataTabProps> = ({
             type="text"
             className="editable-header"
             value={editValue}
-            onChange={handleChange}
-            onBlur={handleSubmit}
-            onKeyDown={handleKeyDown}
+            onChange={handleTitleChange}
+            onBlur={handleTitleSubmit}
+            onKeyDown={handleKeyPress}
             autoFocus
           />
         ) : (
-          <h1 onClick={handleClick}>{title}</h1>
+          <h1 onClick={handleTitleClick}>{title}</h1>
         )}
       </div>
       <div className="content-box">
@@ -67,6 +93,24 @@ export const DataTab: React.FC<DataTabProps> = ({
           {t('data.description')}<br/>
           {t('data.editHint')}
         </p>
+      </div>
+      <div className="ribbon-controls">
+        <div className="ribbon-control-group">
+          <button
+            className="toggle-button"
+            onClick={handleRibbonToggle}
+          >
+            {isRibbonVisible ? 'Hide Ribbon' : 'Show Ribbon'}
+          </button>
+          <label className="color-picker-wrapper">
+            <input
+              type="color"
+              value={colorInput}
+              onChange={handleColorChange}
+              onClick={(e) => e.stopPropagation()}
+            />
+          </label>
+        </div>
       </div>
     </div>
   );
