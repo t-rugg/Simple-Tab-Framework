@@ -10,6 +10,7 @@ import { AboutTab } from './AboutTab';
 import { TabType, getTabTypeConfig } from '../types/tabs';
 import { TabBar } from './TabBar';
 import { RibbonType } from '../styles/RibbonStyles';
+import './ViewDivider.css';
 
 // temp
 const randomEmojis = [
@@ -274,11 +275,14 @@ export const TabManager: React.FC = () => {
             displayName = t('tabs.numbered', { name: displayName, number });
         }
 
+        const randomColor = type === 'data' ? `#${Math.floor(Math.random()*16777215).toString(16).padStart(6, '0')}` : '#000000';
         const newTab: TabData = {
             id: newId,
             title: displayName,
             emoji: typeConfig.isUnique ? typeConfig.emoji : randomEmojis[Math.floor(Math.random() * randomEmojis.length)],
-            type
+            type,
+            ribbon: type === 'data' ? randomColor : 'none',
+            ribbonColor: randomColor
         };
 
         setNewTabId(newId);
@@ -560,7 +564,7 @@ export const TabManager: React.FC = () => {
                         newGroups[groupIndex].tabs[tabIndex] = {
                             ...newGroups[groupIndex].tabs[tabIndex],
                             ribbon: newRibbon,
-                            ribbonColor: newRibbon === 'none' ? ribbonColor : newRibbon
+                            ribbonColor: newRibbon === 'none' ? newGroups[groupIndex].tabs[tabIndex].ribbonColor : newRibbon
                         };
                         return newGroups;
                     });

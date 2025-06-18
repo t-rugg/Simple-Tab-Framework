@@ -26,9 +26,10 @@ export const DataTab: React.FC<DataTabProps> = ({
 
   useEffect(() => {
     if (ribbon !== 'none') {
-      setColorInput(ribbonColor);
+      setColorInput(ribbon);
       setIsRibbonVisible(true);
     } else {
+      setColorInput(ribbonColor);
       setIsRibbonVisible(false);
     }
   }, [ribbon, ribbonColor]);
