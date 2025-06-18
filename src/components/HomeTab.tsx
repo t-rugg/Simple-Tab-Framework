@@ -6,7 +6,7 @@ interface HomeTabProps {
   title: string;
 }
 
-export const HomeTab: React.FC<HomeTabProps> = ({ title }) => {
+export const HomeTab: React.FC<HomeTabProps> = () => {
   const { t } = useTranslation();
 
   return (
