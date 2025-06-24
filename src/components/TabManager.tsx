@@ -679,6 +679,14 @@ export const TabManager: React.FC = () => {
     const sourceGroup = { ...newGroups[sourceGroupIndex] };
     const targetGroup = { ...newGroups[targetGroupIndex] };
 
+    // Check if the source group actually contains a tab at the specified dragIndex
+    // This warning can be triggered if a tab is moved to a new group and is being dragged back
+    // This can be safely ignored, but may be desirable to adjust in the future
+    if (dragIndex < 0 || dragIndex >= sourceGroup.tabs.length) {
+      console.warn('Invalid dragIndex:', dragIndex, 'for source group with', sourceGroup.tabs.length, 'tabs. Skipping move operation.');
+      return;
+    }
+
     // Remove tab from source group
     const [movedTab] = sourceGroup.tabs.splice(dragIndex, 1);
     sourceGroup.tabs = [...sourceGroup.tabs];
@@ -691,7 +699,7 @@ export const TabManager: React.FC = () => {
 
     // Update active tab in source group to be the tab to the left (or right if no left tab)
     if (sourceGroup.tabs.length > 0) {
-      const newActiveIndex = dragIndex > 0 ? dragIndex - 1 : 0;
+      const newActiveIndex = dragIndex > 0 ? Math.min(dragIndex - 1, sourceGroup.tabs.length - 1) : 0;
       sourceGroup.activeTabId = sourceGroup.tabs[newActiveIndex].id;
     }
 
@@ -714,6 +722,9 @@ export const TabManager: React.FC = () => {
   };
 
   const splitView = (groupId: string, tabId: string) => {
+    // Suppress for mobile
+    if (screen.orientation.type.startsWith('portrait')) return;
+
     // We only want 2 views
     if (tabGroups.length >= 2) return;
 
