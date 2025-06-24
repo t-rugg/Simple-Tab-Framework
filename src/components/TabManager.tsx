@@ -1,21 +1,24 @@
+'use client';
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { TabTypeDropdown } from './TabTypeDropdown';
-import { SettingsTab } from './tabs/SettingsTab';
-import { DataTab } from './tabs/DataTab';
-import { HomeTab } from './tabs/HomeTab';
-import { AboutTab } from './tabs/AboutTab';
+import { TabTypeDropdown } from '@/ui/TabTypeDropdown';
+import { SettingsTab } from '@/tabs/SettingsTab';
+import { DataTab } from '@/tabs/DataTab';
+import { HomeTab } from '@/tabs/HomeTab';
+import { AboutTab } from '@/tabs/AboutTab';
 import {
   TabType,
   getTabTypeConfig,
   TabInstance,
   TabFactory,
   TabComponent,
-} from '../types/tabs';
-import { TabBar } from './TabBar';
-import './ViewDivider.css';
+} from '@/types/index';
+import { TabBar } from '@/ui/TabBar';
+import { useRibbonStyles } from '@/styles/index';
+import '@/ui/ViewDivider.css';
 import './TabManager.css';
 
 interface TabGroup {
@@ -80,6 +83,10 @@ const defaultState = {
 
 const loadStoredState = (): { tabGroups: TabGroup[]; nextTabId: number } => {
   try {
+    if (typeof window === 'undefined') {
+      return defaultState;
+    }
+
     const stored = localStorage.getItem(STORAGE_KEY);
     if (!stored) return defaultState;
 
@@ -135,45 +142,84 @@ const loadStoredState = (): { tabGroups: TabGroup[]; nextTabId: number } => {
   }
 };
 
-export const TabManager: React.FC = () => {
-  const initialState = loadStoredState();
-  const [tabGroups, setTabGroups] = useState<TabGroup[]>(
-    initialState.tabGroups
-  );
+export const TabManager: React.FC<{ onReady?: () => void }> = ({ onReady }) => {
+  useRibbonStyles(); // Inject ribbon styles
+
+  const [mounted, setMounted] = useState(false);
+  const onReadyRef = useRef(onReady);
+
+  // Update ref when prop changes
+  useEffect(() => {
+    onReadyRef.current = onReady;
+  }, [onReady]);
+
+  const [tabGroups, setTabGroups] = useState<TabGroup[]>(defaultState.tabGroups);
   const [showEmojis, setShowEmojis] = useState(true);
-  const [nextTabId, setNextTabId] = useState(initialState.nextTabId);
+  const [nextTabId, setNextTabId] = useState(defaultState.nextTabId);
   const [showDropdown, setShowDropdown] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({ x: 0, y: 0 });
-  const [activeGroupId, setActiveGroupId] = useState<string>(tabGroups[0].id);
+  const [activeGroupId, setActiveGroupId] = useState<string>(defaultState.tabGroups[0].id);
   const [viewRatio, setViewRatio] = useState(0.5); // 50-50 split by default
   const [removingTabId, setRemovingTabId] = useState<string | null>(null);
   const [newTabId, setNewTabId] = useState<string | null>(null);
-  const [maxTabWidth, setMaxTabWidth] = useState(() => {
-    const stored = localStorage.getItem('maxTabWidth');
-    return stored ? parseInt(stored, 10) : 16;
-  });
-  const [ribbonWidth, setRibbonWidth] = useState(() => {
-    const stored = localStorage.getItem('ribbonWidth');
-    return stored ? parseInt(stored, 10) : 4;
-  });
+  const [maxTabWidth, setMaxTabWidth] = useState(16);
+  const [ribbonWidth, setRibbonWidth] = useState(4);
   const isDragging = useRef(false);
   const { t, i18n } = useTranslation();
 
+  // Load stored state after mount to prevent hydration mismatches
   useEffect(() => {
-    document.documentElement.style.setProperty(
-      '--tabTitleMaxLength',
-      `${maxTabWidth}ch`
-    );
-    localStorage.setItem('maxTabWidth', maxTabWidth.toString());
-  }, [maxTabWidth]);
+    if (typeof window !== 'undefined') {
+      console.log('TabManager: Starting state load...');
+      const startTime = performance.now();
+
+      const storedState = loadStoredState();
+
+      // Update state immediately without expensive comparisons
+      setTabGroups(storedState.tabGroups);
+      setNextTabId(storedState.nextTabId);
+      setActiveGroupId(storedState.tabGroups[0].id);
+
+      const storedMaxTabWidth = localStorage.getItem('maxTabWidth');
+      const storedRibbonWidth = localStorage.getItem('ribbonWidth');
+
+      if (storedMaxTabWidth) {
+        setMaxTabWidth(parseInt(storedMaxTabWidth, 10));
+      }
+      if (storedRibbonWidth) {
+        setRibbonWidth(parseInt(storedRibbonWidth, 10));
+      }
+
+      setMounted(true);
+
+      const endTime = performance.now();
+      console.log(`TabManager: State load completed in ${endTime - startTime}ms`);
+
+      // Call onReady immediately after state is loaded
+      console.log('TabManager: Calling onReady...');
+      onReadyRef.current?.();
+    }
+  }, []);
 
   useEffect(() => {
-    document.documentElement.style.setProperty(
-      '--ribbonWidth',
-      `${ribbonWidth}px`
-    );
-    localStorage.setItem('ribbonWidth', ribbonWidth.toString());
-  }, [ribbonWidth]);
+    if (mounted && typeof window !== 'undefined') {
+      document.documentElement.style.setProperty(
+        '--tabTitleMaxLength',
+        `${maxTabWidth}ch`
+      );
+      localStorage.setItem('maxTabWidth', maxTabWidth.toString());
+    }
+  }, [maxTabWidth, mounted]);
+
+  useEffect(() => {
+    if (mounted && typeof window !== 'undefined') {
+      document.documentElement.style.setProperty(
+        '--ribbonWidth',
+        `${ribbonWidth}px`
+      );
+      localStorage.setItem('ribbonWidth', ribbonWidth.toString());
+    }
+  }, [ribbonWidth, mounted]);
 
   useEffect(() => {
     const handleGlobalContextMenu = (e: MouseEvent) => {
@@ -215,11 +261,13 @@ export const TabManager: React.FC = () => {
       nextTabId,
     };
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToStore));
+      if (mounted && typeof window !== 'undefined') {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToStore));
+      }
     } catch (error) {
       console.error('Failed to save state:', error);
     }
-  }, [tabGroups, nextTabId]);
+  }, [tabGroups, nextTabId, mounted]);
 
   // Update tab instances when relevant state changes
   useEffect(() => {
@@ -473,47 +521,22 @@ export const TabManager: React.FC = () => {
 
     const newId = nextTabId.toString();
 
+    const fallbackNames = {
+      home: 'Home',
+      data: 'Data',
+      settings: 'Settings',
+      about: 'About',
+    };
+
     let displayName = t(`tabs.${type}`);
     if (!displayName || displayName.startsWith('?')) {
-      const fallbackNames = {
-        home: 'Home',
-        data: 'Data',
-        settings: 'Settings',
-        about: 'About',
-      };
       displayName = fallbackNames[type] || 'Tab';
     }
 
     if (!typeConfig.isUnique) {
-      const existingTitles = tabGroups
-        .flatMap(g => g.tabs)
-        .filter(tab => tab.tabComponent.getType() === type)
-        .map(tab => tab.tabComponent.getTitle(tab.props));
-
-      let number = 1;
-      const numberedTitle = t('tabs.numbered', { name: displayName, number });
-      const fallbackNumberedTitle = `${displayName} ${number}`;
-      let titleToCheck =
-        numberedTitle && !numberedTitle.startsWith('?')
-          ? numberedTitle
-          : fallbackNumberedTitle;
-
-      while (existingTitles.includes(titleToCheck)) {
-        number++;
-        const nextNumberedTitle = t('tabs.numbered', {
-          name: displayName,
-          number,
-        });
-        const nextFallbackNumberedTitle = `${displayName} ${number}`;
-        const nextTitleToCheck =
-          nextNumberedTitle && !nextNumberedTitle.startsWith('?')
-            ? nextNumberedTitle
-            : nextFallbackNumberedTitle;
-
-        if (nextTitleToCheck === titleToCheck) break;
-        titleToCheck = nextTitleToCheck;
-      }
-      displayName = titleToCheck;
+      // For non-unique tabs, let the tab component handle its own title
+      // Just use the base name without numbering
+      displayName = fallbackNames[type] || 'Tab';
     }
 
     const tabComponent = tabComponentRegistry[type];
@@ -715,7 +738,7 @@ export const TabManager: React.FC = () => {
 
   const splitView = (groupId: string, tabId: string) => {
     // Suppress for mobile
-    if (screen.orientation.type.startsWith('portrait')) return;
+    if (typeof window !== 'undefined' && screen.orientation.type.startsWith('portrait')) return;
 
     // We only want 2 views
     if (tabGroups.length >= 2) return;
@@ -758,7 +781,7 @@ export const TabManager: React.FC = () => {
     });
   };
 
-  const closeAllTabs = (e?: React.MouseEvent) => {
+  const closeAllTabs = () => {
     setTabGroups([
       {
         id: '1',
@@ -868,21 +891,23 @@ export const TabManager: React.FC = () => {
 
   useEffect(() => {
     const handleOrientationChange = () => {
-      if (screen.orientation.type.startsWith('portrait')) {
+      if (typeof window !== 'undefined' && screen.orientation.type.startsWith('portrait')) {
         if (tabGroups.length > 1 && tabGroups.find(g => g.id === '2')) {
           deleteGroup('2');
         }
       }
     };
 
-    window.addEventListener('orientationchange', handleOrientationChange);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('orientationchange', handleOrientationChange);
 
-    // Also check on initial load in case device is already in portrait
-    handleOrientationChange();
+      // Also check on initial load in case device is already in portrait
+      handleOrientationChange();
 
-    return () => {
-      window.removeEventListener('orientationchange', handleOrientationChange);
-    };
+      return () => {
+        window.removeEventListener('orientationchange', handleOrientationChange);
+      };
+    }
   }, [tabGroups]);
 
   return (

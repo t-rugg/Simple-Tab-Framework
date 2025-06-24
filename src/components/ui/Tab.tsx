@@ -1,8 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import { useDragLayer } from 'react-dnd';
-import { TabDropdown } from './TabDropdown';
-import { RibbonType } from '../styles/RibbonStyles';
+import { TabDropdown } from '@/ui/TabDropdown';
+import { RibbonType } from '@/styles/index';
 import './Tab.css';
 
 interface DragItem {

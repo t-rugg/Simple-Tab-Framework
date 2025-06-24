@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Tab } from './Tab';
-import { TabInstance } from '../types/tabs';
-import { RibbonType } from '../styles/RibbonStyles';
+import { Tab } from '@/ui/Tab';
+import { TabInstance } from '@/types/index';
+import { RibbonType } from '@/styles/index';
 import './TabBar.css';
 
 interface TabBarProps {

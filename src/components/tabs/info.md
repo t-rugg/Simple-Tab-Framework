@@ -40,7 +40,7 @@ export class YourTabFactory implements TabFactory {
 }
 ```
 
-## 3. Add to Registry `TabManager.tsx`
+## 3. Add to Registry `src/components/TabManager.tsx`
 
 ```typescript
 import { YourTab } from './tabs/YourTab';
@@ -52,7 +52,7 @@ const tabComponentRegistry: Record<TabType, TabComponent> = {
 };
 ```
 
-## 4. Update Types `types/tabs.ts`
+## 4. Update Types `src/types/tabs.ts`
 
 ```typescript
 export type TabType = 'home' | 'data' | 'settings' | 'about' | 'yourTab';
@@ -75,12 +75,12 @@ The `addDividerAfter` property can be included and set to `true` to tell the new
 
 Any existing languages should have the tab titles added. For example:
 
-**en.json:**
+**src/i18n/translations/en.json:**
 ```json
 { "yourTab": { "title": "Your Tab" } }
 ```
 
-**fr.json:**
+**src/i18n/translations/fr.json:**
 ```json
 { "yourTab": { "title": "Votre Onglet" } }
 ```

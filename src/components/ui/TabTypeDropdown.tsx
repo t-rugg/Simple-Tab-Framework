@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { TAB_TYPES, TabType } from '../types/tabs';
+import { TAB_TYPES, TabType } from '@/types/index';
 
 interface TabTypeDropdownProps {
   onSelect: (type: TabType) => void;

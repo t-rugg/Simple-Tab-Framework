@@ -1,7 +1,8 @@
+'use client';
+
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useTheme } from '../context/ThemeContext';
-import { useToast } from '../context/ToastContext';
+import { useTheme, useToast } from '@/context/index';
 
 export const ThemeToggle: React.FC = () => {
   const { themeName, toggleTheme } = useTheme();

@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import './SettingsTab.css';
-import '../../themes.css';
-import { useTheme } from '../../context/ThemeContext';
-import { TabFactory, TabComponentProps, Tab } from '../../types/tabs';
+import '@/app/themes.css';
+import { useTheme } from '@/context/index';
+import { TabFactory, TabComponentProps, Tab } from '@/types/index';
 
 interface SettingsTabProps extends TabComponentProps {
   showEmojis: boolean;
@@ -106,6 +106,7 @@ export const SettingsTab: React.FC<SettingsTabProps> & Tab = ({
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
+    localStorage.setItem('language', lng);
   };
 
   const handleExportData = () => {

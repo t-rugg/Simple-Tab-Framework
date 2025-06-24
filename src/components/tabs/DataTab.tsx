@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import '../TabContent.css';
-import { RibbonType, isValidHexColor } from '../../styles/RibbonStyles';
-import { TabFactory, TabComponentProps, Tab } from '../../types/tabs';
+import '@/ui/TabContent.css';
+import { RibbonType, isValidHexColor } from '@/styles/index';
+import { TabFactory, TabComponentProps, Tab } from '@/types/index';
 
 interface DataTabProps extends TabComponentProps {
   title: string;

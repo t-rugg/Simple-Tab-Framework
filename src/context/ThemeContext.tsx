@@ -1,3 +1,5 @@
+'use client';
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 type ThemeName = 'light' | 'dark';
@@ -12,17 +14,28 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [themeName, setThemeName] = useState<ThemeName>(() => {
-    const savedTheme = localStorage.getItem('theme') as ThemeName;
-    return savedTheme && (savedTheme === 'light' || savedTheme === 'dark')
-      ? savedTheme
-      : 'light';
-  });
+  const [themeName, setThemeName] = useState<ThemeName>('light');
+  const [mounted, setMounted] = useState(false);
 
+  // Initialize theme after mount
   useEffect(() => {
-    localStorage.setItem('theme', themeName);
-    document.documentElement.setAttribute('data-theme', themeName);
-  }, [themeName]);
+    if (typeof window !== 'undefined') {
+      const savedTheme = localStorage.getItem('theme') as ThemeName;
+      const initialTheme = savedTheme && (savedTheme === 'light' || savedTheme === 'dark')
+        ? savedTheme
+        : 'light';
+      setThemeName(initialTheme);
+      setMounted(true);
+    }
+  }, []);
+
+  // Apply theme when it changes
+  useEffect(() => {
+    if (mounted && typeof window !== 'undefined') {
+      localStorage.setItem('theme', themeName);
+      document.documentElement.setAttribute('data-theme', themeName);
+    }
+  }, [themeName, mounted]);
 
   const toggleTheme = () => {
     setThemeName(prevTheme => (prevTheme === 'light' ? 'dark' : 'light'));

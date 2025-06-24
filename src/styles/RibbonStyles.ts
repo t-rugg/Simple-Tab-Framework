@@ -1,3 +1,7 @@
+'use client';
+
+import { useEffect } from 'react';
+
 // Define the type for ribbon colors - can be 'none' or any hex color
 export type RibbonType = 'none' | string;
 
@@ -28,9 +32,18 @@ export const isValidHexColor = (color: string): boolean => {
   return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(color);
 };
 
-// Inject the ribbonStyles CSS into the DOM
-if (typeof document !== 'undefined') {
-  const style = document.createElement('style');
-  style.textContent = ribbonStyles;
-  document.head.appendChild(style);
-}
+// Hook to inject the ribbonStyles CSS into the DOM
+export const useRibbonStyles = () => {
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      // Check if styles are already injected
+      const existingStyle = document.getElementById('ribbon-styles');
+      if (!existingStyle) {
+        const style = document.createElement('style');
+        style.id = 'ribbon-styles';
+        style.textContent = ribbonStyles;
+        document.head.appendChild(style);
+      }
+    }
+  }, []);
+};
