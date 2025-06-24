@@ -1,3 +1,3 @@
 // Re-export contexts for better tree-shaking
-export { ThemeProvider, useTheme } from './ThemeContext';
-export { ToastProvider, useToast } from './ToastContext';
+export { ThemeProvider, useTheme } from './themeContext';
+export { ToastProvider, useToast } from './toastContext';

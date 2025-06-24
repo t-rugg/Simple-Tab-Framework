@@ -4,11 +4,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { TabTypeDropdown } from '@/ui/TabTypeDropdown';
-import { SettingsTab } from '@/tabs/SettingsTab';
-import { DataTab } from '@/tabs/DataTab';
-import { HomeTab } from '@/tabs/HomeTab';
-import { AboutTab } from '@/tabs/AboutTab';
+import { TabTypeDropdown } from '@/ui/tabTypeDropdown';
+import { SettingsTab } from '@/tabs/settingsTab';
+import { DataTab } from '@/tabs/dataTab';
+import { HomeTab } from '@/tabs/homeTab';
+import { AboutTab } from '@/tabs/aboutTab';
 import {
   TabType,
   getTabTypeConfig,
@@ -18,8 +18,8 @@ import {
 } from '@/types/index';
 import { TabBar } from '@/ui/TabBar';
 import { useRibbonStyles } from '@/styles/index';
-import '@/ui/ViewDivider.css';
-import './TabManager.css';
+import '@/ui/viewDivider.css';
+import './tabManager.css';
 
 interface TabGroup {
   id: string;

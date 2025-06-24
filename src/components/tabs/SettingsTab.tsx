@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import './SettingsTab.css';
+import './settingsTab.css';
 import '@/app/themes.css';
 import { useTheme } from '@/context/index';
 import { TabFactory, TabComponentProps, Tab } from '@/types/index';

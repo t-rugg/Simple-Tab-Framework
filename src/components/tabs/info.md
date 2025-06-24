@@ -5,8 +5,8 @@
 ```typescript
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import '../TabContent.css';
-import { TabFactory, TabComponentProps, Tab } from '../../types/tabs';
+import '@/ui/tabContent.css';
+import { TabFactory, TabComponentProps, Tab } from '@/types/index';
 
 interface YourTabProps extends TabComponentProps {
   onCustomAction?: () => void;

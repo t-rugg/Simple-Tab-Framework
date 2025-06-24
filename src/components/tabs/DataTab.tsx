@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import '@/ui/TabContent.css';
+import '@/ui/tabContent.css';
 import { RibbonType, isValidHexColor } from '@/styles/index';
 import { TabFactory, TabComponentProps, Tab } from '@/types/index';
 

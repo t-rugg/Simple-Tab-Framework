@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Tab } from '@/ui/Tab';
 import { TabInstance } from '@/types/index';
 import { RibbonType } from '@/styles/index';
-import './TabBar.css';
+import './tabBar.css';
 
 interface TabBarProps {
   tabs: TabInstance[];

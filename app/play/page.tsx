@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { TabManager } from '@/components/TabManager';
-import { ThemeToggle } from '@/ui/ThemeToggle';
-import '@/components/TabManager.css';
-import '../App.css';
+import { TabManager } from '@/components/tabManager';
+import { ThemeToggle } from '@/ui/themeToggle';
+import '@/components/tabManager.css';
+import '../app.css';
 import './loading.css';
 import './play.css';
 

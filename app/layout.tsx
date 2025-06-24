@@ -1,5 +1,5 @@
 import './globals.css';
-import { I18nProvider } from '@/components/I18nProvider';
+import { I18nProvider } from '@/components/i18nProvider';
 import { ThemeProvider, ToastProvider } from '@/context/index';
 
 export const metadata = {

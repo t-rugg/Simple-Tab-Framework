@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import '@/ui/TabContent.css';
+import '@/ui/tabContent.css';
 import { TabFactory, TabComponentProps, Tab } from '@/types/index';
 
 export class HomeTabFactory implements TabFactory {
