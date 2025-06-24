@@ -403,7 +403,7 @@ export const TabManager: React.FC = () => {
 
     const group = tabGroups[groupIndex];
 
-    // Check if it's a unique tab type that's already open
+    // Don't open multiple copies of unique tabs
     if (typeConfig.isUnique) {
       // Find the tab in any group
       const existingTab = tabGroups
@@ -433,24 +433,19 @@ export const TabManager: React.FC = () => {
             const sourceGroup = { ...newGroups[sourceGroupIndex] };
             const targetGroup = { ...newGroups[groupIndex] };
 
-            // Remove tab from source group
             const [movedTab] = sourceGroup.tabs.splice(
               sourceGroup.tabs.findIndex(t => t.id === existingTab.id),
               1
             );
             sourceGroup.tabs = [...sourceGroup.tabs];
 
-            // Insert tab into target group
             targetGroup.tabs.push(movedTab);
             targetGroup.tabs = [...targetGroup.tabs];
             targetGroup.activeTabId = movedTab.id;
-
-            // Update active tab in source group to be the first tab
             if (sourceGroup.tabs.length > 0) {
               sourceGroup.activeTabId = sourceGroup.tabs[0].id;
             }
 
-            // Update the groups
             newGroups[sourceGroupIndex] = sourceGroup;
             newGroups[groupIndex] = targetGroup;
 
@@ -687,14 +682,11 @@ export const TabManager: React.FC = () => {
       return;
     }
 
-    // Remove tab from source group
     const [movedTab] = sourceGroup.tabs.splice(dragIndex, 1);
     sourceGroup.tabs = [...sourceGroup.tabs];
 
-    // Insert tab into target group
     targetGroup.tabs.splice(hoverIndex, 0, movedTab);
     targetGroup.tabs = [...targetGroup.tabs];
-    // Set the moved tab as active in the target group
     targetGroup.activeTabId = movedTab.id;
 
     // Update active tab in source group to be the tab to the left (or right if no left tab)
@@ -767,26 +759,6 @@ export const TabManager: React.FC = () => {
   };
 
   const closeAllTabs = (e?: React.MouseEvent) => {
-    // If Shift is pressed, skip confirmation
-    if (e?.shiftKey) {
-      setTabGroups([
-        {
-          id: '1',
-          tabs: [
-            {
-              id: '1',
-              tabComponent: HomeTab,
-              props: defaultHomeTabProps,
-            },
-          ],
-          activeTabId: '1',
-        },
-      ]);
-      setNextTabId(2);
-      return;
-    }
-
-    // No confirmation needed here since SettingsTab handles it
     setTabGroups([
       {
         id: '1',
@@ -801,6 +773,42 @@ export const TabManager: React.FC = () => {
       },
     ]);
     setNextTabId(2);
+  };
+
+  const deleteGroup = (groupIdToDelete: string) => {
+    // Don't delete if there's only one group
+    if (tabGroups.length <= 1) {
+      console.warn('Cannot delete group: only one group remaining');
+      return;
+    }
+
+    const groupToDelete = tabGroups.find(g => g.id === groupIdToDelete);
+    const remainingGroup = tabGroups.find(g => g.id !== groupIdToDelete);
+
+    if (!groupToDelete) {
+      console.error('Group to delete not found:', groupIdToDelete);
+      return;
+    }
+
+    if (!remainingGroup) {
+      console.error('Remaining group not found');
+      return;
+    }
+
+    const allTabs = [...remainingGroup.tabs, ...groupToDelete.tabs];
+    let newActiveTabId = remainingGroup.activeTabId;
+    if (!newActiveTabId || !allTabs.find(tab => tab.id === newActiveTabId)) {
+      newActiveTabId = groupToDelete.activeTabId || allTabs[0]?.id || '';
+    }
+
+    const mergedGroup: TabGroup = {
+      id: '1', // Always use ID "1" for the remaining group
+      tabs: allTabs,
+      activeTabId: newActiveTabId,
+    };
+
+    setTabGroups([mergedGroup]);
+    setViewRatio(1);
   };
 
   const renderTabContent = (tabInstance: TabInstance) => {
@@ -857,6 +865,25 @@ export const TabManager: React.FC = () => {
       document.removeEventListener('mouseup', handleMouseUp);
     };
   }, []);
+
+  useEffect(() => {
+    const handleOrientationChange = () => {
+      if (screen.orientation.type.startsWith('portrait')) {
+        if (tabGroups.length > 1 && tabGroups.find(g => g.id === '2')) {
+          deleteGroup('2');
+        }
+      }
+    };
+
+    window.addEventListener('orientationchange', handleOrientationChange);
+
+    // Also check on initial load in case device is already in portrait
+    handleOrientationChange();
+
+    return () => {
+      window.removeEventListener('orientationchange', handleOrientationChange);
+    };
+  }, [tabGroups]);
 
   return (
     <DndProvider backend={HTML5Backend}>
