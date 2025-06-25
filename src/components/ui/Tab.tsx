@@ -37,6 +37,7 @@ interface TabProps {
   isRightmost?: boolean;
   isNew?: boolean;
   ribbon?: RibbonType;
+  hasNotification?: boolean;
 }
 
 export const Tab: React.FC<TabProps> = ({
@@ -56,6 +57,7 @@ export const Tab: React.FC<TabProps> = ({
   isRemoving = false,
   isNew = false,
   ribbon = 'none',
+  hasNotification = false,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [] = useState(false);
@@ -271,6 +273,7 @@ export const Tab: React.FC<TabProps> = ({
         >
           ×
         </button>
+        {hasNotification && <div className="tab-notification-dot" />}
       </div>
       <TabDropdown
         isOpen={isDropdownOpen}

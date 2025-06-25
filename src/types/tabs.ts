@@ -90,4 +90,5 @@ export interface TabInstance {
   id: string;
   tabComponent: Tab;
   props?: any; // Additional props for the tab component
+  hasNotification?: boolean;
 }

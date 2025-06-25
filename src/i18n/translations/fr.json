@@ -62,7 +62,9 @@
   "theme": {
     "light": "Clair",
     "dark": "Sombre",
-    "system": "Système"
+    "system": "Système",
+    "modeEnabled": "Mode {{mode}} activé",
+    "switchTo": "Passer au mode {{mode}}"
   },
   "common": {
     "close": "Fermer",

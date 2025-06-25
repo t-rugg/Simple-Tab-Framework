@@ -76,6 +76,7 @@ export const TabBar: React.FC<TabBarProps> = ({
             isRightmost={index === tabs.length - 1}
             isNew={id === newTabId}
             ribbon={ribbon as RibbonType}
+            hasNotification={tabInstance.hasNotification}
           />
         );
       })}

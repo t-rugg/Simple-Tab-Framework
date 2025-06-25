@@ -36,6 +36,7 @@ interface StoredState {
       id: string;
       type: TabType;
       props: any;
+      hasNotification?: boolean;
     }>;
     activeTabId: string;
   }>;
@@ -113,6 +114,7 @@ const loadStoredState = (): { tabGroups: TabGroup[]; nextTabId: number } => {
               id: tab.id,
               tabComponent: HomeTab,
               props: { ...tab.props, type: 'home' },
+              hasNotification: tab.hasNotification,
             };
           }
           // Use the factory to reconstruct props, passing all saved props
@@ -126,6 +128,7 @@ const loadStoredState = (): { tabGroups: TabGroup[]; nextTabId: number } => {
             id: tab.id,
             tabComponent,
             props,
+            hasNotification: tab.hasNotification,
           };
         }),
         activeTabId: group.activeTabId,
@@ -165,6 +168,7 @@ export const TabManager: React.FC<{ onReady?: () => void }> = ({ onReady }) => {
   const [maxTabWidth, setMaxTabWidth] = useState(16);
   const [ribbonWidth, setRibbonWidth] = useState(4);
   const isDragging = useRef(false);
+  const tabGroupsRef = useRef(tabGroups);
   const { t, i18n } = useTranslation();
 
   // Load stored state after mount to prevent hydration mismatches
@@ -252,6 +256,7 @@ export const TabManager: React.FC<{ onReady?: () => void }> = ({ onReady }) => {
         id: tab.id,
         type: tab.tabComponent.getType(),
         props: tab.props,
+        hasNotification: tab.hasNotification,
       })),
       activeTabId: group.activeTabId,
     }));
@@ -440,6 +445,71 @@ export const TabManager: React.FC<{ onReady?: () => void }> = ({ onReady }) => {
       callbacks.ribbonWidth = ribbonWidth;
     }
 
+    if (requiredCallbacks.includes('setTabNotification')) {
+      callbacks.setTabNotification = setTabNotification;
+    }
+
+    if (requiredCallbacks.includes('clearAllNotifications')) {
+      callbacks.clearAllNotifications = clearAllNotifications;
+    }
+
+    if (requiredCallbacks.includes('setNotificationByType')) {
+      callbacks.setNotificationByType = (tabType: string, hasNotification: boolean): boolean => {
+        // Check current state synchronously first using ref
+        const currentGroups = tabGroupsRef.current;
+
+        let isActive = false;
+        let found = false;
+        let foundTabId = '';
+
+        // Check if the tab is currently active
+        for (const group of currentGroups) {
+          const tabIndex = group.tabs.findIndex(tab =>
+            tab.tabComponent.getType() === tabType
+          );
+          if (tabIndex !== -1) {
+            found = true;
+            foundTabId = group.tabs[tabIndex].id;
+            if (hasNotification && group.activeTabId === foundTabId) {
+              isActive = true;
+              break;
+            }
+          }
+        }
+
+        if (!found) {
+          console.warn(`Tab of type ${tabType} not found`);
+          return false;
+        }
+
+        if (isActive) {
+          return false;
+        }
+
+        // If we get here, the tab exists and is not active, so we can set the notification
+        setTabGroups(prev => {
+          const newGroups = [...prev];
+
+          for (const group of newGroups) {
+            const tabIndex = group.tabs.findIndex(tab =>
+              tab.tabComponent.getType() === tabType
+            );
+            if (tabIndex !== -1) {
+              group.tabs[tabIndex] = {
+                ...group.tabs[tabIndex],
+                hasNotification,
+              };
+              break;
+            }
+          }
+
+          return newGroups;
+        });
+
+        return true;
+      };
+    }
+
     return callbacks;
   };
 
@@ -567,10 +637,12 @@ export const TabManager: React.FC<{ onReady?: () => void }> = ({ onReady }) => {
       newGroups[groupIndex] = {
         ...group,
         tabs: [...group.tabs, newTabInstance],
-        activeTabId: newId,
       };
       return newGroups;
     });
+
+    // Set the new tab as active (this will also clear any notification)
+    setTabActive(group.id, newId);
     setNextTabId(nextTabId + 1);
   };
 
@@ -628,8 +700,20 @@ export const TabManager: React.FC<{ onReady?: () => void }> = ({ onReady }) => {
         newGroups[groupIndex] = {
           ...group,
           tabs: newTabs,
-          activeTabId: newActiveTabId,
         };
+
+        // Set the new active tab (this will also clear any notification)
+        if (newActiveTabId) {
+          newGroups[groupIndex].activeTabId = newActiveTabId;
+          const newActiveTabIndex = newTabs.findIndex(tab => tab.id === newActiveTabId);
+          if (newActiveTabIndex !== -1) {
+            newGroups[groupIndex].tabs[newActiveTabIndex] = {
+              ...newGroups[groupIndex].tabs[newActiveTabIndex],
+              hasNotification: false,
+            };
+          }
+        }
+
         return newGroups;
       });
       setRemovingTabId(null);
@@ -712,15 +796,18 @@ export const TabManager: React.FC<{ onReady?: () => void }> = ({ onReady }) => {
     targetGroup.tabs = [...targetGroup.tabs];
     targetGroup.activeTabId = movedTab.id;
 
-    // Update active tab in source group to be the tab to the left (or right if no left tab)
-    if (sourceGroup.tabs.length > 0) {
-      const newActiveIndex = dragIndex > 0 ? Math.min(dragIndex - 1, sourceGroup.tabs.length - 1) : 0;
-      sourceGroup.activeTabId = sourceGroup.tabs[newActiveIndex].id;
-    }
-
     newGroups[sourceGroupIndex] = sourceGroup;
     newGroups[targetGroupIndex] = targetGroup;
     setTabGroups(newGroups);
+
+    // Set the moved tab as active in the target group (this will clear any notification)
+    setTabActive(targetGroupId, movedTab.id);
+
+    // Set the new active tab in the source group (this will clear any notification)
+    if (sourceGroup.tabs.length > 0) {
+      const newActiveIndex = dragIndex > 0 ? Math.min(dragIndex - 1, sourceGroup.tabs.length - 1) : 0;
+      setTabActive(sourceGroupId, sourceGroup.tabs[newActiveIndex].id);
+    }
 
     // If source group is now empty, remove it and ensure remaining group has ID "1"
     if (sourceGroup.tabs.length === 0) {
@@ -758,25 +845,37 @@ export const TabManager: React.FC<{ onReady?: () => void }> = ({ onReady }) => {
       const newGroup: TabGroup = {
         id: groupId === '1' ? '2' : '1', // Use 2 if source is 1, otherwise use 1
         tabs: [tab],
-        activeTabId: tab.id,
+        activeTabId: tab.id, // Default to the moved tab
       };
 
       // Remove the tab from the original group
       const updatedSourceGroup = {
         ...sourceGroup,
         tabs: sourceGroup.tabs.filter(t => t.id !== tabId),
-        activeTabId: sourceGroup.tabs[0]?.id || '1',
+        activeTabId: sourceGroup.tabs[0]?.id || '1', // Default to first remaining tab
       };
 
       // If the source group is now empty, remove it
       if (updatedSourceGroup.tabs.length === 0) {
-        return [...prev.filter(g => g.id !== groupId), newGroup];
+        const newGroups = [...prev.filter(g => g.id !== groupId), newGroup];
+        // Set the moved tab as active in the new group
+        setTimeout(() => setTabActive(newGroup.id, tab.id), 0);
+        return newGroups;
       }
 
       // Otherwise, update the source group and add the new group
       const newGroups = [...prev];
       newGroups[sourceGroupIndex] = updatedSourceGroup;
       newGroups.push(newGroup);
+
+      // Set the moved tab as active in the new group
+      setTimeout(() => setTabActive(newGroup.id, tab.id), 0);
+
+      // Set the first remaining tab as active in the source group
+      if (updatedSourceGroup.tabs.length > 0) {
+        setTimeout(() => setTabActive(groupId, updatedSourceGroup.tabs[0].id), 0);
+      }
+
       return newGroups;
     });
   };
@@ -834,8 +933,102 @@ export const TabManager: React.FC<{ onReady?: () => void }> = ({ onReady }) => {
     setViewRatio(1);
   };
 
+  // Utility function to set notification on a specific tab
+  const setTabNotification = (tabId: string, hasNotification: boolean) => {
+    // Check current state synchronously first using ref
+    const currentGroups = tabGroupsRef.current;
+
+    let isActive = false;
+    let found = false;
+
+    // Check if the tab is currently active
+    for (const group of currentGroups) {
+      const tabIndex = group.tabs.findIndex(tab => tab.id === tabId);
+      if (tabIndex !== -1) {
+        found = true;
+        if (hasNotification && group.activeTabId === tabId) {
+          isActive = true;
+          break;
+        }
+      }
+    }
+
+    if (!found) {
+      console.warn(`Tab with ID ${tabId} not found`);
+      return;
+    }
+
+    if (isActive) {
+      return;
+    }
+
+    // If we get here, the tab exists and is not active, so we can set the notification
+    setTabGroups(prev => {
+      const newGroups = [...prev];
+
+      for (const group of newGroups) {
+        const tabIndex = group.tabs.findIndex(tab => tab.id === tabId);
+        if (tabIndex !== -1) {
+          group.tabs[tabIndex] = {
+            ...group.tabs[tabIndex],
+            hasNotification,
+          };
+          break;
+        }
+      }
+
+      return newGroups;
+    });
+  };
+
+  // Utility function to clear all notifications
+  const clearAllNotifications = () => {
+    setTabGroups(prev => {
+      const newGroups = [...prev];
+      for (const group of newGroups) {
+        group.tabs = group.tabs.map(tab => ({
+          ...tab,
+          hasNotification: false,
+        }));
+      }
+      return newGroups;
+    });
+  };
+
+  // Helper function to set a tab as active and clear its notification
+  const setTabActive = (groupId: string, tabId: string) => {
+    setTabGroups(prev => {
+      const newGroups = [...prev];
+      const groupIndex = newGroups.findIndex(g => g.id === groupId);
+
+      if (groupIndex === -1) {
+        console.warn(`Group with ID ${groupId} not found`);
+        return prev;
+      }
+
+      const group = newGroups[groupIndex];
+      const tabIndex = group.tabs.findIndex(tab => tab.id === tabId);
+
+      if (tabIndex === -1) {
+        console.warn(`Tab with ID ${tabId} not found in group ${groupId}`);
+        return prev;
+      }
+
+      // Update the active tab ID
+      group.activeTabId = tabId;
+
+      // Clear notification from the newly active tab
+      group.tabs[tabIndex] = {
+        ...group.tabs[tabIndex],
+        hasNotification: false,
+      };
+
+      return newGroups;
+    });
+  };
+
   const renderTabContent = (tabInstance: TabInstance) => {
-    const { tabComponent, props } = tabInstance;
+    const { tabComponent, props, id } = tabInstance;
 
     if (!tabComponent) {
       console.error('TabInstance missing tabComponent:', tabInstance);
@@ -843,7 +1036,9 @@ export const TabManager: React.FC<{ onReady?: () => void }> = ({ onReady }) => {
     }
 
     try {
-      return tabComponent.render(props);
+      // Pass the tab ID to the component
+      const propsWithId = { ...props, tabId: id };
+      return tabComponent.render(propsWithId);
     } catch (error) {
       console.error('Error rendering tab:', error);
       return <div>Error: Failed to render tab</div>;
@@ -910,6 +1105,10 @@ export const TabManager: React.FC<{ onReady?: () => void }> = ({ onReady }) => {
     }
   }, [tabGroups]);
 
+  useEffect(() => {
+    tabGroupsRef.current = tabGroups;
+  }, [tabGroups]);
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="tab-manager">
@@ -943,19 +1142,7 @@ export const TabManager: React.FC<{ onReady?: () => void }> = ({ onReady }) => {
                   tabs={group.tabs}
                   activeTabId={group.activeTabId}
                   onTabSelect={tabId => {
-                    setTabGroups(prev => {
-                      const newGroups = [...prev];
-                      const groupIndex = newGroups.findIndex(
-                        g => g.id === group.id
-                      );
-                      if (groupIndex !== -1) {
-                        newGroups[groupIndex] = {
-                          ...newGroups[groupIndex],
-                          activeTabId: tabId,
-                        };
-                      }
-                      return newGroups;
-                    });
+                    setTabActive(group.id, tabId);
                   }}
                   onTabClose={tabId => closeTab(group.id, tabId)}
                   onTabMove={moveTab}

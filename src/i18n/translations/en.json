@@ -62,7 +62,9 @@
   "theme": {
     "light": "Light",
     "dark": "Dark",
-    "system": "System"
+    "system": "System",
+    "modeEnabled": "{{mode}} mode enabled",
+    "switchTo": "Switch to {{mode}} mode"
   },
   "common": {
     "close": "Close",
