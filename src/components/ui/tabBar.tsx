@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Tab } from '@/ui/Tab';
+import { Tab } from '@/ui/tab';
 import { TabInstance } from '@/types/index';
 import { RibbonType } from '@/styles/index';
 import './tabBar.css';

@@ -14,7 +14,7 @@
     "importError": "Failed to import data. Please make sure the file is valid.",
     "clearError": "Failed to clear data. Please try again.",
     "confirmCloseAll": {
-      "message": "Are you sure you want to close all tabs? This can't be undone!",
+      "message": "Are you sure you want to close all tabs? This can&apos;t be undone!",
       "yes": "Yes",
       "no": "No"
     },
@@ -24,7 +24,7 @@
       "no": "Cancel"
     },
     "confirmClear": {
-      "message": "Are you sure you want to clear all data? This will remove all tabs and settings. This can't be undone!",
+      "message": "Are you sure you want to clear all data? This will remove all tabs and settings. This can&apos;t be undone!",
       "yes": "Yes, Clear All",
       "no": "Cancel"
     },

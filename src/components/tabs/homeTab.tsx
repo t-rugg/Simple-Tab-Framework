@@ -27,10 +27,8 @@ export class HomeTabFactory implements TabFactory {
 }
 
 export const HomeTab: React.FC<TabComponentProps> & Tab = ({
-  setTabNotification,
   clearAllNotifications,
-  setNotificationByType,
-  tabId
+  setNotificationByType
 }: TabComponentProps & {
   setTabNotification?: (tabId: string, hasNotification: boolean) => void;
   clearAllNotifications?: () => void;
@@ -79,7 +77,7 @@ export const HomeTab: React.FC<TabComponentProps> & Tab = ({
         <h2>Notification Test</h2>
         <p>Test the notification dot feature on tabs:</p>
         <p style={{ fontSize: '0.9em', color: '#666', marginBottom: '10px' }}>
-          Note: Notifications won't be set on tabs that are currently active.
+          Note: Notifications won&apos;t be set on tabs that are currently active.
         </p>
         <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
           <button

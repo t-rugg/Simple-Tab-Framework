@@ -1,7 +1,7 @@
 {
   "settings": {
     "title": "Paramètres",
-    "tabSettings": "Paramètres d'affichage",
+    "tabSettings": "Paramètres d&apos;affichage",
     "showEmojis": "Afficher les emojis dans les onglets",
     "hideEmojis": "Masquer les emojis dans les onglets",
     "maxTabWidth": "Largeur maximale des onglets : {{width}}",
@@ -41,10 +41,10 @@
     "title": "Accueil",
     "gettingStarted": "Pour commencer",
     "instructions": {
-      "addTabs": "Clic droit sur la barre d'onglets pour ajouter de nouveaux onglets",
+      "addTabs": "Clic droit sur la barre d&apos;onglets pour ajouter de nouveaux onglets",
       "reorderTabs": "Faites glisser les onglets pour les réorganiser",
-      "splitView": "Faites glisser les onglets vers le bord droit de l'écran pour créer une vue divisée",
-      "customize": "Utilisez l'onglet Paramètres pour personnaliser votre expérience"
+      "splitView": "Faites glisser les onglets vers le bord droit de l&apos;écran pour créer une vue divisée",
+      "customize": "Utilisez l&apos;onglet Paramètres pour personnaliser votre expérience"
     }
   },
   "about": {
@@ -55,7 +55,7 @@
   },
   "data": {
     "description": "Ceci est un onglet de données. Vous pouvez personnaliser son contenu et ses fonctionnalités selon vos besoins.",
-    "editHint": "Cliquer sur le texte de l'en-tête permet de modifier le nom de l'onglet.",
+    "editHint": "Cliquer sur le texte de l&apos;en-tête permet de modifier le nom de l&apos;onglet.",
     "showRibbon": "Afficher la bande",
     "hideRibbon": "Masquer la bande"
   },
@@ -72,7 +72,7 @@
     "cancel": "Annuler"
   },
   "dropdown": {
-    "changeView": "Migrer l'onglet",
-    "closeTab": "Fermer l'onglet"
+    "changeView": "Migrer l&apos;onglet",
+    "closeTab": "Fermer l&apos;onglet"
   }
 }
