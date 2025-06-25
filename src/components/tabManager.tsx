@@ -16,7 +16,7 @@ import {
   TabFactory,
   TabComponent,
 } from '@/types/index';
-import { TabBar } from '@/ui/TabBar';
+import { TabBar } from '@/ui/tabBar';
 import { useRibbonStyles } from '@/styles/index';
 import '@/ui/viewDivider.css';
 import './tabManager.css';
